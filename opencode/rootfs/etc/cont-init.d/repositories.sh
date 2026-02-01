@@ -7,6 +7,7 @@
 readonly REPOS_DIR="/data/repos"
 readonly GH_CONFIG_DIR="/data/.config/gh"
 readonly SSH_DIR="/data/.ssh"
+readonly GITCONFIG="/data/.gitconfig"
 
 # Create directories
 mkdir -p "${REPOS_DIR}"
@@ -25,6 +26,23 @@ fi
 if [[ ! -L /root/.ssh ]]; then
     rm -rf /root/.ssh
     ln -s "${SSH_DIR}" /root/.ssh
+fi
+
+# Symlink gitconfig to persistent storage
+if [[ ! -L /root/.gitconfig ]]; then
+    rm -f /root/.gitconfig
+    ln -s "${GITCONFIG}" /root/.gitconfig
+fi
+
+# Initialize gitconfig with required settings if it doesn't exist
+if [[ ! -f "${GITCONFIG}" ]]; then
+    bashio::log.info "Initializing git configuration..."
+    
+    # Use SSH for GitHub
+    git config --global url."git@github.com:".insteadOf "https://github.com/"
+    
+    # Trust /data directories
+    git config --global safe.directory /data
 fi
 
 # Check if gh is authenticated

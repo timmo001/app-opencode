@@ -68,9 +68,7 @@ COPY rootfs /
 
 # Set up persistent symlinks for git/ssh/gh config
 RUN \
-    mkdir -p /data/.ssh /data/.config/gh /data/repos \
-    && chmod 700 /data/.ssh \
-    && mkdir -p /root/.config \
+    mkdir -p /root/.config \
     && rm -rf /root/.ssh /root/.config/gh /root/.gitconfig \
     && ln -s /data/.ssh /root/.ssh \
     && ln -s /data/.config/gh /root/.config/gh \

@@ -9,6 +9,10 @@ readonly GH_CONFIG_DIR="/data/.config/gh"
 readonly SSH_DIR="/data/.ssh"
 readonly GITCONFIG="/data/.gitconfig"
 
+# Create directories in persistent storage
+mkdir -p "${REPOS_DIR}" "${GH_CONFIG_DIR}" "${SSH_DIR}"
+chmod 700 "${SSH_DIR}"
+
 # Add GitHub's SSH host key if not present
 if [[ ! -f "${SSH_DIR}/known_hosts" ]] || ! grep -q "github.com" "${SSH_DIR}/known_hosts"; then
     bashio::log.info "Adding GitHub SSH host key..."

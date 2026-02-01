@@ -11,7 +11,7 @@ This app runs OpenCode as a headless server, providing a web-based interface for
 1. Add this repository to your Home Assistant app store
 2. Install the OpenCode app
 3. Start the app
-4. Access OpenCode via the sidebar or direct port access
+4. Access OpenCode at `http://your-ha-ip:4096`
 
 ## Configuration
 

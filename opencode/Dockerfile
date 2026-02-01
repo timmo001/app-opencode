@@ -7,7 +7,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install requirements for app
 ARG BUILD_ARCH=amd64
-ARG HA_CLI_VERSION="4.45.0"
 
 # Install dependencies
 RUN \
@@ -19,11 +18,6 @@ RUN \
         git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    \
-    && curl -L -s -o /usr/bin/ha \
-        "https://github.com/home-assistant/cli/releases/download/${HA_CLI_VERSION}/ha_${BUILD_ARCH}" \
-    && chmod a+x /usr/bin/ha \
-    \
     && rm -f -r /etc/nginx
 
 # Install OpenCode binary from GitHub releases

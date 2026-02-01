@@ -7,6 +7,9 @@
 # Set up environment for OpenCode
 export HOME=/root
 
+# Set default project directory to addon data workspace
+cd /data
+
 # Configure server password if set
 if bashio::config.has_value 'server_password'; then
     export OPENCODE_SERVER_PASSWORD="$(bashio::config 'server_password')"

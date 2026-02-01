@@ -37,6 +37,18 @@ RUN \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install GitHub CLI
+ARG GH_VERSION="2.65.0"
+RUN \
+    case "${BUILD_ARCH}" in \
+        "amd64") GH_ARCH="linux_amd64" ;; \
+        "aarch64") GH_ARCH="linux_arm64" ;; \
+        *) echo "Unsupported architecture for gh: ${BUILD_ARCH}" && exit 1 ;; \
+    esac \
+    && curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz" \
+        | tar -xz --strip-components=1 -C /usr/local \
+    && gh --version
+
 # Install OpenCode binary from GitHub releases
 ARG OPENCODE_VERSION="1.1.48"
 RUN \

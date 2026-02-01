@@ -19,15 +19,19 @@ This app runs OpenCode as a headless server, providing a web-based interface for
 
 Optional password to protect the OpenCode server. When set, authentication will be required to access the server.
 
-## Access
+### Option: `repositories`
 
-### Via Home Assistant Sidebar (Ingress)
+An array of GitHub repositories to clone on startup. Repositories should be specified in the format `owner/repo` (e.g., `timmo001/system-bridge`).
 
-Click the OpenCode icon in the Home Assistant sidebar to access the web interface through ingress.
+Example configuration:
 
-### Via Direct Port
+```yaml
+repositories:
+  - timmo001/system-bridge
+  - home-assistant/core
+```
 
-Access OpenCode directly at `http://your-ha-ip:4096`.
+Repositories are cloned to `/data/repos/<repo-name>` using the GitHub CLI (`gh`).
 
 ## Setting Up LLM Providers
 

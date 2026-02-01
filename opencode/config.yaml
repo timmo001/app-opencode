@@ -15,6 +15,9 @@ arch:
   - amd64
 options:
   server_password: ''
+  repositories: []
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   server_password: str?
+  repositories:
+    - str

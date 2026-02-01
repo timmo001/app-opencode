@@ -2,7 +2,7 @@
 name: OpenCode
 version: dev
 slug: opencode
-description: AI coding agent with web interface powered by OpenCode.
+description: AI coding agent with web interface powered by OpenCode
 url: https://github.com/anomalyco/opencode
 init: false
 ingress: true

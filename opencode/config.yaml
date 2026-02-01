@@ -20,7 +20,7 @@ auth_api: true
 map:
   - ssl:ro
 options:
-  ssl: true
+  ssl: false
   certfile: fullchain.pem
   keyfile: privkey.pem
   server_password: ''

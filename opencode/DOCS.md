@@ -21,7 +21,7 @@ Optional password to protect the OpenCode server. When set, authentication will 
 
 ### Option: `repositories`
 
-An array of GitHub repositories to clone on startup. Repositories should be specified in the format `owner/repo` (e.g., `timmo001/system-bridge`).
+An array of GitHub repositories to clone on startup. Repositories should be specified in the format `owner/repo` (e.g., `octocat/Hello-World`).
 
 Example configuration:
 
@@ -31,6 +31,18 @@ repositories:
 ```
 
 Repositories are cloned to `/data/repos/<repo-name>` using the GitHub CLI (`gh`).
+
+## GitHub Authentication
+
+To clone private repositories or push changes, you need to authenticate with GitHub using SSH:
+
+1. Open OpenCode at `http://your-ha-ip:4096`
+2. Run `gh auth login` in the terminal
+3. Select **GitHub.com**
+4. Select **SSH** as the preferred protocol
+5. Follow the prompts to authenticate
+
+Your SSH keys and GitHub authentication are persisted to `/data/.ssh` and `/data/.config/gh`, so they will survive container restarts.
 
 ## Setting Up LLM Providers
 

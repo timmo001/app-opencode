@@ -192,15 +192,8 @@ git config --global credential.helper store
 # Credentials saved to ~/.git-credentials (in /root/)
 ```
 
-Or use SSH:
-
-```bash
-# Add SSH key to /data/.ssh/ and configure
-mkdir -p /data/.ssh
-# Copy your private key to /data/.ssh/id_ed25519
-chmod 600 /data/.ssh/id_ed25519
-export GIT_SSH_COMMAND="ssh -i /data/.ssh/id_ed25519"
-```
+When prompted during git operations, enter your GitHub username and personal access token (PAT).
+To create a PAT, visit: https://github.com/settings/tokens
 
 ## Environment Summary
 

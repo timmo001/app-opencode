@@ -5,41 +5,17 @@
 # ==============================================================================
 
 readonly REPOS_DIR="/data/repos"
-readonly GH_CONFIG_DIR="/data/.config/gh"
-readonly SSH_DIR="/data/.ssh"
 readonly GITCONFIG="/data/.gitconfig"
 
 # Create directories in persistent storage
-mkdir -p "${REPOS_DIR}" "${GH_CONFIG_DIR}" "${SSH_DIR}"
-chmod 700 "${SSH_DIR}"
-
-# Add GitHub's SSH host key if not present
-if [[ ! -f "${SSH_DIR}/known_hosts" ]] || ! grep -q "github.com" "${SSH_DIR}/known_hosts"; then
-    bashio::log.info "Adding GitHub SSH host key..."
-    ssh-keyscan -t ed25519 github.com >> "${SSH_DIR}/known_hosts" 2>/dev/null
-fi
-
-# Copy SSH config to restrict connections to GitHub only
-cp /etc/ssh/ssh_config.d/github.conf "${SSH_DIR}/config" 2>/dev/null || true
-chmod 600 "${SSH_DIR}/config" 2>/dev/null || true
+mkdir -p "${REPOS_DIR}"
 
 # Initialize gitconfig with required settings if it doesn't exist
 if [[ ! -f "${GITCONFIG}" ]]; then
     bashio::log.info "Initializing git configuration..."
     
-    # Use SSH for GitHub
-    git config --global url."git@github.com:".insteadOf "https://github.com/"
-    
     # Trust /data directories
     git config --global safe.directory /data
-fi
-
-# Check if gh is authenticated
-GH_AUTHENTICATED=false
-if gh auth status &>/dev/null; then
-    GH_AUTHENTICATED=true
-else
-    bashio::log.warning "GitHub CLI not authenticated. Run 'gh auth login' from OpenCode terminal to authenticate (select SSH)."
 fi
 
 # Check if repositories are configured
@@ -65,11 +41,7 @@ for i in $(seq 0 $((repo_count - 1))); do
         git -C "${repo_path}" pull --ff-only || bashio::log.warning "Failed to pull ${repo}"
     else
         bashio::log.info "Cloning repository ${repo} to ${repo_path}..."
-        if [[ "${GH_AUTHENTICATED}" == "true" ]]; then
-            git clone --depth 1 "git@github.com:${repo}.git" "${repo_path}" || bashio::log.warning "Failed to clone ${repo}"
-        else
-            git clone --depth 1 "https://github.com/${repo}.git" "${repo_path}" || bashio::log.warning "Failed to clone ${repo}"
-        fi
+        git clone --depth 1 "https://github.com/${repo}.git" "${repo_path}" || bashio::log.warning "Failed to clone ${repo}"
     fi
 done
 

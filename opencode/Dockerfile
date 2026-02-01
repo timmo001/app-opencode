@@ -16,7 +16,6 @@ RUN \
         curl \
         wget \
         git \
-        openssh-client \
         jq \
         ripgrep \
         fd-find \
@@ -66,12 +65,10 @@ RUN \
 # Copy root file system
 COPY rootfs /
 
-# Set up persistent symlinks for git/ssh/gh config
+# Set up persistent symlinks for git config
 RUN \
     mkdir -p /root/.config \
-    && rm -rf /root/.ssh /root/.config/gh /root/.gitconfig \
-    && ln -s /data/.ssh /root/.ssh \
-    && ln -s /data/.config/gh /root/.config/gh \
+    && rm -rf /root/.gitconfig \
     && ln -s /data/.gitconfig /root/.gitconfig
 
 # Build arguments

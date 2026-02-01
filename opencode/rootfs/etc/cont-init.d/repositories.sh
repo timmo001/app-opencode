@@ -46,7 +46,10 @@ if [[ ! -f "${GITCONFIG}" ]]; then
 fi
 
 # Check if gh is authenticated
-if ! gh auth status &>/dev/null; then
+GH_AUTHENTICATED=false
+if gh auth status &>/dev/null; then
+    GH_AUTHENTICATED=true
+else
     bashio::log.warning "GitHub CLI not authenticated. Run 'gh auth login' from OpenCode terminal to authenticate (select SSH)."
 fi
 
@@ -73,7 +76,11 @@ for i in $(seq 0 $((repo_count - 1))); do
         git -C "${repo_path}" pull --ff-only || bashio::log.warning "Failed to pull ${repo}"
     else
         bashio::log.info "Cloning repository ${repo} to ${repo_path}..."
-        gh repo clone "${repo}" "${repo_path}" -- --depth 1 || bashio::log.warning "Failed to clone ${repo}"
+        if [[ "${GH_AUTHENTICATED}" == "true" ]]; then
+            git clone --depth 1 "git@github.com:${repo}.git" "${repo_path}" || bashio::log.warning "Failed to clone ${repo}"
+        else
+            git clone --depth 1 "https://github.com/${repo}.git" "${repo_path}" || bashio::log.warning "Failed to clone ${repo}"
+        fi
     fi
 done
 

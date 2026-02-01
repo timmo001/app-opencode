@@ -8,7 +8,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install requirements for app
 ARG BUILD_ARCH=amd64
 
-# Install dependencies
+# Install dependencies and common tools for OpenCode
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -16,6 +16,16 @@ RUN \
         curl \
         nginx \
         git \
+        jq \
+        ripgrep \
+        fd-find \
+        sed \
+        gawk \
+        grep \
+        coreutils \
+        findutils \
+        diffutils \
+        patch \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f -r /etc/nginx

@@ -8,6 +8,10 @@ init: false
 ingress: true
 ingress_stream: true
 panel_icon: mdi:code-braces
+ports:
+  4096/tcp: 4096
+ports_description:
+  4096/tcp: OpenCode server
 homeassistant: 2025.11.0
 arch:
   - aarch64

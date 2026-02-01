@@ -14,6 +14,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        wget \
         nginx \
         git \
         jq \
@@ -26,6 +27,14 @@ RUN \
         findutils \
         diffutils \
         patch \
+        file \
+        tree \
+        unzip \
+        zip \
+        tar \
+        gzip \
+        xz-utils \
+        less \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f -r /etc/nginx

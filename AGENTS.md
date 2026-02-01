@@ -37,47 +37,17 @@ docker build --build-arg BUILD_FROM=ghcr.io/hassio-addons/debian-base:9.2.0 \
 
 ### Shell Scripts
 
-**Header format** (required for all scripts):
+Use the `shell-scripts` skill for detailed patterns. Quick reference:
 
 ```bash
 #!/command/with-contenv bashio
-# ==============================================================================
-# Home Assistant OpenCode App
-# Brief description of what this script does
-# ==============================================================================
-```
-
-**Variable naming:**
-
-```bash
 readonly REPOS_DIR="/data/repos"     # Constants: SCREAMING_SNAKE_CASE + readonly
 repo_path="${REPOS_DIR}/${repo_name}" # Local vars: lowercase_underscores
+bashio::log.info "Message"            # Logging via bashio
+value=$(bashio::config 'key')         # Config access via bashio
 ```
 
-**Quoting** - Always use `"${variable}"` with double quotes.
-
-**Logging** - Use bashio functions:
-
-```bash
-bashio::log.info "Message"
-bashio::log.warning "Non-fatal issue"
-bashio::log.error "Fatal error"
-```
-
-**Error handling:**
-
-```bash
-git pull --ff-only || bashio::log.warning "Failed"  # Non-fatal: || fallback
-if [[ "${1}" -ne 0 ]]; then exit 1; fi              # Fatal: check exit codes
-```
-
-**Config access (bashio):**
-
-```bash
-value=$(bashio::config 'key')
-if bashio::config.has_value 'key'; then ...; fi
-count=$(bashio::config 'array | length')
-```
+Always quote variables: `"${variable}"`
 
 ### YAML Files
 
@@ -94,6 +64,8 @@ description: >-
 ```
 
 ### Dockerfile
+
+Use the `dockerfile` skill for detailed patterns. Quick reference:
 
 ```dockerfile
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -141,12 +113,24 @@ All persistent data in `/data/`:
 
 ### S6 Overlay
 
-- Init scripts: `rootfs/etc/cont-init.d/`
+Use the `s6-overlay` skill for detailed patterns. Quick reference:
+
+- Init scripts: `rootfs/etc/cont-init.d/` (run once at startup, numbered for order)
 - Service scripts: `rootfs/etc/services.d/<service>/` (must have `run`, optionally `finish`)
 
 ### Supported Architectures
 
 Both must be supported: `amd64` (x86_64) and `aarch64` (ARM64)
+
+## Available Skills
+
+Load these skills for detailed implementation guidance:
+
+| Skill           | Use When                                                           |
+| --------------- | ------------------------------------------------------------------ |
+| `shell-scripts` | Writing bash scripts with bashio (logging, config, error handling) |
+| `dockerfile`    | Writing Dockerfiles (multi-arch, hadolint, build args)             |
+| `s6-overlay`    | S6 service management (init scripts, run/finish, lifecycle)        |
 
 ## Important Notes
 

@@ -13,7 +13,7 @@ configuration:
     name: Repositories
     description: >-
       List of GitHub repositories to clone on startup. Specify in
-      the format "owner/repo" (e.g., "timmo001/system-bridge").
+      the format "owner/repo" (e.g., "octocat/Hello-World").
       Repositories are cloned to /data/repos/<repo-name>.
 network:
   4096/tcp: OpenCode web interface

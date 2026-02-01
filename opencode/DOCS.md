@@ -27,8 +27,7 @@ Example configuration:
 
 ```yaml
 repositories:
-  - timmo001/system-bridge
-  - home-assistant/core
+  - octocat/Hello-World
 ```
 
 Repositories are cloned to `/data/repos/<repo-name>` using the GitHub CLI (`gh`).

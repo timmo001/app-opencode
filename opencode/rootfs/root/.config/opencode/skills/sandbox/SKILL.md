@@ -1,6 +1,6 @@
-# Home Assistant OpenCode Environment
+# Sandbox Environment
 
-Manage the sandboxed Home Assistant add-on environment for OpenCode.
+Understand the sandboxed container environment and its limitations.
 
 ## When This Skill MUST Be Used
 
@@ -19,7 +19,6 @@ Manage the sandboxed Home Assistant add-on environment for OpenCode.
 
 ```
 /data/                    # YOUR WORKSPACE - Full read/write access
-├── AGENTS.md             # Environment documentation
 ├── opencode.json         # Project-specific OpenCode config (optional)
 └── <your projects>/      # Clone repos and work here
 

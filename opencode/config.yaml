@@ -7,7 +7,7 @@ url: https://github.com/timmo001/app-opencode
 init: false
 ingress: true
 ingress_stream: true
-panel_icon: mdi:robot
+panel_icon: mdi:code-braces
 homeassistant: 2025.11.0
 arch:
   - aarch64

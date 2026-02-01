@@ -9,25 +9,6 @@ readonly GH_CONFIG_DIR="/data/.config/gh"
 readonly SSH_DIR="/data/.ssh"
 readonly GITCONFIG="/data/.gitconfig"
 
-# Create directories
-mkdir -p "${REPOS_DIR}"
-mkdir -p "${GH_CONFIG_DIR}"
-mkdir -p "${SSH_DIR}"
-chmod 700 "${SSH_DIR}"
-
-# Symlink gh config to persistent storage
-mkdir -p /root/.config
-if [[ ! -L /root/.config/gh ]]; then
-    rm -rf /root/.config/gh
-    ln -s "${GH_CONFIG_DIR}" /root/.config/gh
-fi
-
-# Symlink ssh directory to persistent storage
-if [[ ! -L /root/.ssh ]]; then
-    rm -rf /root/.ssh
-    ln -s "${SSH_DIR}" /root/.ssh
-fi
-
 # Add GitHub's SSH host key if not present
 if [[ ! -f "${SSH_DIR}/known_hosts" ]] || ! grep -q "github.com" "${SSH_DIR}/known_hosts"; then
     bashio::log.info "Adding GitHub SSH host key..."
@@ -37,12 +18,6 @@ fi
 # Copy SSH config to restrict connections to GitHub only
 cp /etc/ssh/ssh_config.d/github.conf "${SSH_DIR}/config" 2>/dev/null || true
 chmod 600 "${SSH_DIR}/config" 2>/dev/null || true
-
-# Symlink gitconfig to persistent storage
-if [[ ! -L /root/.gitconfig ]]; then
-    rm -f /root/.gitconfig
-    ln -s "${GITCONFIG}" /root/.gitconfig
-fi
 
 # Initialize gitconfig with required settings if it doesn't exist
 if [[ ! -f "${GITCONFIG}" ]]; then

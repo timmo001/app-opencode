@@ -1,13 +1,13 @@
 #!/command/with-contenv bashio
 # ==============================================================================
-# Home Assistant OpenCode Add-on
+# Home Assistant OpenCode App
 # Runs the OpenCode server
 # ==============================================================================
 
 # Set up environment for OpenCode
 export HOME=/root
 
-# Set default project directory to addon data workspace
+# Set default project directory to app data workspace
 cd /data
 
 # Configure server password if set

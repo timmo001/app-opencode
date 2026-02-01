@@ -1,10 +1,10 @@
 #!/command/with-contenv bashio
 # ==============================================================================
-# Home Assistant OpenCode Add-on
+# Home Assistant OpenCode App
 # Take down the S6 supervision tree when OpenCode fails
 # ==============================================================================
 if [[ "${1}" -ne 0 ]] && [[ "${1}" -ne 256 ]]; then
-  bashio::log.warning "OpenCode crashed, halting add-on"
+  bashio::log.warning "OpenCode crashed, halting app"
   /run/s6/basedir/bin/halt
 fi
 

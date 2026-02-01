@@ -24,9 +24,6 @@ This app runs [OpenCode](https://opencode.ai) as a web-based AI coding agent for
 
 | Option            | Description                                 |
 | ----------------- | ------------------------------------------- |
-| `ssl`             | Enable/disable SSL for direct port access   |
-| `certfile`        | SSL certificate file (in /ssl/)             |
-| `keyfile`         | SSL private key file (in /ssl/)             |
 | `server_password` | Optional password for server authentication |
 
 ## Documentation

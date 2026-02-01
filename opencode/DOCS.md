@@ -15,25 +15,9 @@ This app runs OpenCode as a headless server, providing a web-based interface for
 
 ## Configuration
 
-### Option: `ssl`
-
-Enables/disables SSL (HTTPS) for direct port access. When enabled, you must provide valid certificate files.
-
-### Option: `certfile`
-
-The certificate file to use for SSL. The file must exist in the `/ssl/` directory.
-
-### Option: `keyfile`
-
-The private key file to use for SSL. The file must exist in the `/ssl/` directory.
-
 ### Option: `server_password`
 
-Optional password to protect the OpenCode server. When set, HTTP Basic authentication will be required with username `opencode`.
-
-### Option: `leave_front_door_open`
-
-When enabled, disables authentication for direct port access. Use with caution.
+Optional password to protect the OpenCode server. When set, authentication will be required to access the server.
 
 ## Access
 
@@ -43,7 +27,7 @@ Click the OpenCode icon in the Home Assistant sidebar to access the web interfac
 
 ### Via Direct Port
 
-Access OpenCode directly at `http://your-ha-ip:4096` (or `https://` if SSL is enabled).
+Access OpenCode directly at `http://your-ha-ip:4096`.
 
 ## Setting Up LLM Providers
 

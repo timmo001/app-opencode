@@ -15,7 +15,6 @@ RUN \
         ca-certificates \
         curl \
         wget \
-        nginx \
         git \
         jq \
         ripgrep \
@@ -36,8 +35,7 @@ RUN \
         xz-utils \
         less \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -f -r /etc/nginx
+    && rm -rf /var/lib/apt/lists/*
 
 # Install OpenCode binary from GitHub releases
 ARG OPENCODE_VERSION="1.1.48"

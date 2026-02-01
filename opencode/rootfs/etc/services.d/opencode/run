@@ -1,0 +1,17 @@
+#!/command/with-contenv bashio
+# ==============================================================================
+# Home Assistant OpenCode Add-on
+# Runs the OpenCode server
+# ==============================================================================
+
+# Set up environment for OpenCode
+export HOME=/root
+
+# Configure server password if set
+if bashio::config.has_value 'server_password'; then
+    export OPENCODE_SERVER_PASSWORD="$(bashio::config 'server_password')"
+    bashio::log.info "Server password authentication enabled"
+fi
+
+bashio::log.info "Starting OpenCode server..."
+exec opencode serve --hostname 0.0.0.0 --port 4096

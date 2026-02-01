@@ -28,6 +28,16 @@ if [[ ! -L /root/.ssh ]]; then
     ln -s "${SSH_DIR}" /root/.ssh
 fi
 
+# Add GitHub's SSH host key if not present
+if [[ ! -f "${SSH_DIR}/known_hosts" ]] || ! grep -q "github.com" "${SSH_DIR}/known_hosts"; then
+    bashio::log.info "Adding GitHub SSH host key..."
+    ssh-keyscan -t ed25519 github.com >> "${SSH_DIR}/known_hosts" 2>/dev/null
+fi
+
+# Copy SSH config to restrict connections to GitHub only
+cp /etc/ssh/ssh_config.d/github.conf "${SSH_DIR}/config" 2>/dev/null || true
+chmod 600 "${SSH_DIR}/config" 2>/dev/null || true
+
 # Symlink gitconfig to persistent storage
 if [[ ! -L /root/.gitconfig ]]; then
     rm -f /root/.gitconfig

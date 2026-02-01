@@ -16,6 +16,7 @@ RUN \
         curl \
         wget \
         git \
+        openssh-client \
         jq \
         ripgrep \
         fd-find \

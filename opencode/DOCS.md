@@ -47,7 +47,7 @@ These come with the app and are always there, whatever the `tools` option says:
 
 - OpenCode 2
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
-- The GitHub CLI (`gh`), `jq` and ripgrep (`rg`)
+- The GitHub CLI (`gh`), `jq`, ripgrep (`rg`) and Neovim (`nvim`), which Git and other tools open for editing
 - From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
 
 ## The terminal
@@ -102,7 +102,7 @@ For GitHub, ask the agent to run `gh auth login`, or run it from OpenCode's term
 
 ## Git
 
-Git comes set up with some defaults: `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Your name, email and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
+Git comes set up with some defaults: new repositories start on `main`, commit messages open in Neovim, `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Your name, email and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
 
 ## Documentation
 

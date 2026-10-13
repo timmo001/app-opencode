@@ -68,6 +68,7 @@ COPY --from=build /src/dist/opencode-app /usr/local/bin/opencode-app
 COPY --from=build /src/dist/plugin.js /usr/local/share/opencode-app/plugin.js
 
 ENV HOME=/data/home \
+    EDITOR=nvim \
     LANG=C.UTF-8 \
     MISE_YES=1 \
     OPENCODE_DISABLE_AUTOUPDATE=1 \

@@ -7,6 +7,10 @@
 	ci = commit
 	st = status
 	lg = log --oneline --decorate --graph -n 25
+[core]
+	editor = nvim
+[init]
+	defaultBranch = main
 [pull]
 	rebase = true
 [push]

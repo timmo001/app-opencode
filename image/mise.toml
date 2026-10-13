@@ -4,6 +4,7 @@
 
 [tools]
 "aqua:aubepkg/aube" = "latest"
+"aqua:neovim/neovim" = "latest"
 bun = "latest"
 gh = "latest"
 jq = "latest"

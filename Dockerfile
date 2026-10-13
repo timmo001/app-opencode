@@ -33,6 +33,7 @@ RUN apt-get update \
         curl \
         git \
         less \
+        libatomic1 \
         openssh-client \
         procps \
         unzip \

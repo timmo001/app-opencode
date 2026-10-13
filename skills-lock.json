@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "skills": {
+    "effect": {
+      "source": "kitlangton/skills",
+      "ref": "a1537921969c7cfc4d985befaba7752313da0fce",
+      "sourceType": "github",
+      "skillPath": "skills/effect/SKILL.md",
+      "computedHash": "d88417dca5f22fcc80b03ebd4096dfa6113a50cc6bb574bf53f75248cd321e35"
+    },
+    "effect-service-design": {
+      "source": "dmmulroy/skills",
+      "ref": "8603380821fee6a77c82639f364ce8fe4f5a92be",
+      "sourceType": "github",
+      "skillPath": "effect-service-design/SKILL.md",
+      "computedHash": "307d3af97e0343c761d56c260310c75b7e754aec2e64c3dee8c0946570d310ee"
+    },
+    "task-runners": {
+      "source": "timmo001/skills",
+      "ref": "98bb162843e692a5b353c772f6665fdfa23233b9",
+      "sourceType": "github",
+      "skillPath": "task-runners/SKILL.md",
+      "computedHash": "10a34db99cf5f030c06f9a00879c05a59a8c2df09595a3bfb40d133c6f4a0690"
+    },
+    "types-enforce-ts": {
+      "source": "timmo001/skills",
+      "ref": "98bb162843e692a5b353c772f6665fdfa23233b9",
+      "sourceType": "github",
+      "skillPath": "types-enforce-ts/SKILL.md",
+      "computedHash": "182012ad1eab7894f4736a0144bddf659a4e87bd6e992129837d0fcb704c1161"
+    },
+    "writing-style": {
+      "source": "timmo001/skills",
+      "ref": "98bb162843e692a5b353c772f6665fdfa23233b9",
+      "sourceType": "github",
+      "skillPath": "writing-style/SKILL.md",
+      "computedHash": "b2fb6c12825c1e43aedcc53756af90b2058d5422a353110396fbb8c3375e51da"
+    }
+  }
+}

@@ -25,6 +25,10 @@ Optional. OpenCode always has a password, on your network and through remote acc
 
 Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco/opentunnel), at a private address that stays the same across restarts. The connection is encrypted end to end: the encryption ends inside the app, so OpenTunnel's relay only passes on traffic it can't read. OpenCode's password still applies, so the address alone doesn't let anyone in: pair your devices from the sidebar page, or sign in with `server_password` if you set one. Turning it off and on again gives a new address.
 
+### `cors_origins`
+
+Other web addresses allowed to call OpenCode from a browser, such as an OpenTunnel address you already use, `https://1a2b3c4d5e6f7a8b.abcd1234efgh.opentunnel.xyz`, or a reverse proxy of your own. Without it, an address OpenCode doesn't know can stop parts of the web app working, such as the terminal. Give origins only: the scheme and host, with a port if it isn't the default, and no path or trailing slash. Leave it empty to only allow OpenCode's own addresses. Origins set by hand with `opencode service set cors` are kept while this is empty.
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.

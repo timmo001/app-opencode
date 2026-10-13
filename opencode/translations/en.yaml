@@ -12,6 +12,12 @@ configuration:
       Reach OpenCode from anywhere through OpenTunnel, at a private address. The connection is
       encrypted end to end, so the tunnel's relay can't read it, and OpenCode still asks for its
       password. Pair your devices from the sidebar page; the address alone doesn't let anyone in.
+  cors_origins:
+    name: Allowed origins
+    description: >-
+      Other web addresses allowed to call OpenCode from a browser, such as an OpenTunnel address
+      you already use (https://1a2b3c4d5e6f7a8b.abcd1234efgh.opentunnel.xyz) or your own proxy.
+      Origins only, with no path or trailing slash.
   system_packages:
     name: System packages
     description: >-

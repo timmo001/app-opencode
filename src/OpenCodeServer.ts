@@ -79,6 +79,7 @@ export const layer = Layer.effect(
     const crashed = yield* Queue.unbounded<void>();
     const registration = `${paths.home}/.local/state/opencode/service.json`;
     const passwordMarker = `${paths.data}/server-password-set`;
+    const corsMarker = `${paths.data}/server-cors-set`;
 
     const opencode = (path: string, args: ReadonlyArray<string>) =>
       Command.run(path, args, { cwd: paths.home, extendEnv: true }).pipe(
@@ -97,6 +98,17 @@ export const layer = Layer.effect(
         // Back to a password of OpenCode's own, which only pairing uses.
         yield* opencode(path, ['service', 'unset', 'password']);
         yield* fs.remove(passwordMarker);
+      }
+
+      const cors = options.cors_origins ?? [];
+
+      if (cors.length > 0) {
+        yield* opencode(path, ['service', 'set', 'cors', cors.join(',')]);
+        yield* fs.writeFileString(corsMarker, '');
+      } else if (yield* fs.exists(corsMarker)) {
+        // Only origins the option set are removed, so ones set by hand are left alone.
+        yield* opencode(path, ['service', 'unset', 'cors']);
+        yield* fs.remove(corsMarker);
       }
 
       // Turning it on creates the tunnel's identity, which needs the internet. Without it OpenCode

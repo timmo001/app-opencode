@@ -5,6 +5,7 @@ import { Paths } from './Paths.js';
 const Options = Schema.Struct({
   server_password: Schema.optional(Schema.String),
   remote_access: Schema.Boolean,
+  cors_origins: Schema.optional(Schema.Array(Schema.String)),
   system_packages: Schema.Array(Schema.String),
   tools: Schema.Array(Schema.String),
 });

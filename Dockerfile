@@ -29,6 +29,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        bash-completion \
         ca-certificates \
         curl \
         git \
@@ -43,6 +44,8 @@ RUN apt-get update \
 COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
 COPY image/mise.toml /etc/mise/config.toml
 COPY image/profile.sh /etc/profile.d/mise.sh
+COPY image/bashrc /etc/bash.bashrc
+COPY image/inputrc /etc/opencode-app/inputrc
 
 # Node and aube first, since the npm tools install with them. Caches go with the layer.
 RUN HOME=/root mise install --system node aqua:aubepkg/aube \
@@ -53,6 +56,7 @@ COPY --from=build /src/dist/opencode-app /usr/local/bin/opencode-app
 COPY --from=build /src/dist/plugin.js /usr/local/share/opencode-app/plugin.js
 
 ENV HOME=/data/home \
+    LANG=C.UTF-8 \
     MISE_YES=1 \
     OPENCODE_DISABLE_AUTOUPDATE=1 \
     PATH=/data/home/.local/share/mise/shims:/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

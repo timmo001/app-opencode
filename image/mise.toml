@@ -3,14 +3,14 @@
 # config folder (mise.toml), which can't change these.
 
 [tools]
-node = "latest"
-bun = "latest"
 "aqua:aubepkg/aube" = "latest"
+bun = "latest"
 gh = "latest"
 jq = "latest"
-ripgrep = "latest"
+node = "latest"
 # OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.
 "npm:@opencode/cli" = { version = "2", allow_builds = true }
+ripgrep = "latest"
 
 [settings]
 npm.package_manager = "aube"

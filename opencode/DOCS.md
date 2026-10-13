@@ -39,7 +39,7 @@ The default list is `build-essential`, `dnsutils`, `ffmpeg`, `iputils-ping`, `rs
 
 Developer tools to install with [mise](https://mise.jdx.dev), as `name`, `name@version` or `backend:name@version`, such as `go@1.27` or `npm:prettier@3`. They're installed once and kept between restarts. Without a version, you get the newest, and the app keeps it up to date. A tool mise can't install is skipped, and shown on the sidebar page and in the app's log.
 
-The default list is `actionlint`, `bat`, `deno`, `fd`, `fzf`, `go`, `hyperfine`, `just`, `lazygit`, `npm:skills`, `pitchfork`, `pnpm`, `pypi:yamllint`, `python`, `ruff`, `shellcheck`, `shfmt`, `uv`, `watchexec` and `yq`. Remove any you don't want.
+The default list is `actionlint`, `bat`, `deno`, `eza`, `fd`, `fzf`, `go`, `hyperfine`, `just`, `lazygit`, `npm:skills`, `pitchfork`, `pnpm`, `pypi:yamllint`, `python`, `ruff`, `shellcheck`, `shfmt`, `starship`, `uv`, `watchexec`, `yq` and `zoxide`. Remove any you don't want.
 
 ## Preinstalled tools
 
@@ -48,7 +48,18 @@ These come with the app and are always there, whatever the `tools` option says:
 - OpenCode 2
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
 - The GitHub CLI (`gh`), `jq` and ripgrep (`rg`)
-- From Debian: `git`, `curl`, `ssh`, `less`, `unzip` and `xz`
+- From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
+
+## The terminal
+
+OpenCode's terminal runs bash with tab completion that cycles through matches, and history that's kept in `/data/home` and searched with the arrow keys. Tools from the default `tools` list add more when they're installed:
+
+- `starship`: the [Starship](https://starship.rs) prompt
+- `eza`: `ls`, `lsa`, `lt` and `lta`
+- `zoxide`: `cd` that also jumps to folders you've used
+- `fzf` and `bat`: `Ctrl+R` searches your history, and `ff` finds a file with a preview
+
+There are short Git aliases too, such as `g` for `git`. To change the prompt, add `/data/home/.config/starship.toml`. For your own aliases, add `/data/home/.bash_profile`, which the terminal reads after the app's defaults.
 
 ## Updates
 

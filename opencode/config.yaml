@@ -45,6 +45,7 @@ options:
     - actionlint
     - bat
     - deno
+    - eza
     - fd
     - fzf
     - go
@@ -59,9 +60,11 @@ options:
     - ruff
     - shellcheck
     - shfmt
+    - starship
     - uv
     - watchexec
     - yq
+    - zoxide
 schema:
   server_password: password?
   remote_access: bool

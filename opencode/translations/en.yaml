@@ -3,13 +3,15 @@ configuration:
   server_password:
     name: Server password
     description: >-
-      Protects OpenCode on your network and through remote access, with the username opencode.
-      Leave it empty to sign in from the sidebar only, with a link that works once.
+      Optional. OpenCode always has a password, on your network and through remote access: without
+      this, it makes a random one, and you sign in by pairing from the sidebar page. Set this only to
+      use your own password instead, with the username opencode.
   remote_access:
     name: Remote access
     description: >-
-      Reach OpenCode from anywhere through OpenTunnel, at a private address the sidebar page opens
-      for you. Anyone with the address and the password can use OpenCode, so set a password first.
+      Reach OpenCode from anywhere through OpenTunnel, at a private address. The connection is
+      encrypted end to end, so the tunnel's relay can't read it, and OpenCode still asks for its
+      password. Pair your devices from the sidebar page; the address alone doesn't let anyone in.
   system_packages:
     name: System packages
     description: >-

@@ -1,6 +1,7 @@
 import { BunHttpServer } from '@effect/platform-bun';
 import { Config, Effect, Layer, Option, Schema } from 'effect';
 import { HttpClient, HttpRouter, HttpServerRequest, HttpServerResponse } from 'effect/http';
+import { renderSVG } from 'uqr';
 import { OpenCodeServer } from './OpenCodeServer.js';
 import { Page } from './Page.js';
 import { Tools } from './Tools.js';
@@ -21,6 +22,36 @@ const failed = (error: { readonly message: string }) =>
   Effect.logWarning(error.message).pipe(
     Effect.as(HttpServerResponse.jsonUnsafe({ error: error.message }, { status: 500 }))
   );
+
+/** The address the browser reached Home Assistant at, which OpenCode's port shares on your network. */
+const PairRequest = Schema.Struct({
+  host: Schema.String.check(Schema.isPattern(/^[A-Za-z0-9.:[\]-]+$/)),
+});
+
+/** The host port the network option maps OpenCode to, if any, for links on your network. */
+const hostPort = Effect.gen(function* () {
+  const http = yield* HttpClient.HttpClient;
+  const token = yield* Config.String('SUPERVISOR_TOKEN').pipe(Config.option);
+
+  return yield* Option.match(token, {
+    onNone: () => Effect.succeed<number | null>(OpenCodeServer.port),
+    onSome: (value) =>
+      http
+        .get('http://supervisor/addons/self/info', {
+          headers: { authorization: `Bearer ${value}` },
+        })
+        .pipe(
+          Effect.flatMap((response) => response.json),
+          Effect.flatMap(Schema.decodeUnknownEffect(SelfInfo)),
+          Effect.map((info) => info.data.network?.[`${OpenCodeServer.port}/tcp`] ?? null),
+          Effect.catch((error) =>
+            Effect.logWarning(`Couldn't read the app's ports: ${error.message}`).pipe(
+              Effect.as(null)
+            )
+          )
+        ),
+  });
+});
 
 /** Only the Supervisor, which proxies ingress for signed-in Home Assistant users, may use the page. */
 const ingressGuard =
@@ -43,29 +74,6 @@ const routes = Layer.mergeAll(
     Effect.gen(function* () {
       const server = yield* OpenCodeServer.Service;
       const tools = yield* Tools.Service;
-      const http = yield* HttpClient.HttpClient;
-      const token = yield* Config.String('SUPERVISOR_TOKEN').pipe(Config.option);
-
-      // The host port the network option maps OpenCode to, if any, for links on your network.
-      const hostPort = yield* Option.match(token, {
-        onNone: () => Effect.succeed<number | null>(OpenCodeServer.port),
-        onSome: (value) =>
-          http
-            .get('http://supervisor/addons/self/info', {
-              headers: { authorization: `Bearer ${value}` },
-            })
-            .pipe(
-              Effect.flatMap((response) => response.json),
-              Effect.flatMap(Schema.decodeUnknownEffect(SelfInfo)),
-              Effect.map((info) => info.data.network?.[`${OpenCodeServer.port}/tcp`] ?? null),
-              Effect.catch((error) =>
-                Effect.logWarning(`Couldn't read the app's ports: ${error.message}`).pipe(
-                  Effect.as(null)
-                )
-              )
-            ),
-      });
-
       const running = yield* server.info.pipe(Effect.option);
       const installed = yield* tools.serverOpenCode.pipe(Effect.option);
 
@@ -75,7 +83,7 @@ const routes = Layer.mergeAll(
           Option.flatMapNullishOr(running, (current) => current.remoteUrl)
         ),
         installed: Option.getOrNull(Option.map(installed, (openCode) => openCode.version)),
-        hostPort,
+        hostPort: yield* hostPort,
         warnings: yield* tools.warnings,
       });
     })
@@ -85,8 +93,28 @@ const routes = Layer.mergeAll(
     '/api/pair',
     Effect.gen(function* () {
       const server = yield* OpenCodeServer.Service;
+      const { host } = yield* HttpServerRequest.schemaBodyJson(PairRequest);
+      const port = yield* hostPort;
+      const remoteUrl = yield* server.info.pipe(Effect.map((info) => info.remoteUrl));
+      const pair = yield* server.pair;
 
-      return HttpServerResponse.jsonUnsafe(yield* server.pair);
+      // Remote first: it works from anywhere, and clients keep the first address that answers.
+      const urls = [
+        ...(remoteUrl === undefined ? [] : [{ kind: 'remote', url: remoteUrl }]),
+        ...(port === null ? [] : [{ kind: 'local', url: `http://${host}:${port}` }]),
+      ];
+
+      return HttpServerResponse.jsonUnsafe({
+        expiresIn: pair.expiresIn,
+        links: urls.map(({ kind, url }) => ({
+          kind,
+          url: new URL(`/auth/connect/${pair.code}`, url).href,
+        })),
+        // The same payload `opencode pair` puts in its QR code, which OpenCode's apps scan.
+        qr: renderSVG(JSON.stringify({ code: pair.code, urls: urls.map(({ url }) => url) }), {
+          border: 2,
+        }),
+      });
     }).pipe(Effect.catch(failed))
   ),
   HttpRouter.add(

@@ -4,22 +4,26 @@ An AI coding agent for your Home Assistant setup, powered by [OpenCode](https://
 
 ## Opening OpenCode
 
-Open **OpenCode** in the sidebar. The page there shows which OpenCode is running and signs you in with a link that works once, in a new tab:
+Open **OpenCode** in the sidebar. The page there shows which OpenCode is running and signs you in with a link that works once, in a new tab. You don't need a password:
 
 - **Open on this network** opens OpenCode at your Home Assistant host's address, on port 49374. It's shown while that port is mapped in the app's **Network** settings.
 - **Open with remote access** opens OpenCode through OpenTunnel. It's shown when the `remote_access` option is on and the tunnel is up.
 
 OpenCode's web app can't run inside the sidebar itself, so it always opens in its own tab. Home Assistant Link (formerly Home Assistant Cloud) reaches the sidebar page from anywhere, but not OpenCode's own port, so away from home use remote access.
 
+### Pairing another device
+
+To sign in from your phone, another computer or the OpenCode desktop app, select **Show a pairing code** on the sidebar page. Scan the QR code with the OpenCode app, or copy a link and open or paste it on the device. It's the same as running `opencode pair` on your own machine: the code works once and expires after a few minutes, so show a new one for each device.
+
 ## Options
 
 ### `server_password`
 
-Protects OpenCode on your network and through remote access. Sign in with the username `opencode` and this password, for example from the OpenCode desktop app. Leave it empty to sign in from the sidebar only.
+Optional. OpenCode always has a password, on your network and through remote access. Without this option, it makes a random one, and you sign in by pairing from the sidebar page. Set this only to use your own password instead, with the username `opencode`, for example from a client that can't pair.
 
 ### `remote_access`
 
-Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco/opentunnel), at a private address that stays the same across restarts. Anyone with the address and the password can use OpenCode, so set `server_password` first. Turning it off and on again gives a new address.
+Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco/opentunnel), at a private address that stays the same across restarts. The connection is encrypted end to end: the encryption ends inside the app, so OpenTunnel's relay only passes on traffic it can't read. OpenCode's password still applies, so the address alone doesn't let anyone in: pair your devices from the sidebar page, or sign in with `server_password` if you set one. Turning it off and on again gives a new address.
 
 ### `system_packages`
 

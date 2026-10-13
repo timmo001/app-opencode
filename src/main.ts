@@ -2,6 +2,7 @@ import { BunRuntime, BunServices } from '@effect/platform-bun';
 import { Cause, Effect, Layer } from 'effect';
 import { FetchHttpClient } from 'effect/http';
 import { Control } from './Control.js';
+import { Git } from './Git.js';
 import { Home } from './Home.js';
 import { Ingress } from './Ingress.js';
 import { Log } from './Log.js';
@@ -18,6 +19,7 @@ const startup = Layer.effectDiscard(
 
     yield* Log.banner('OpenCode app', 'Starting');
     yield* Home.prepare();
+    yield* Git.setIdentity();
     yield* tools.applyOptions;
     yield* tools.upgrade.pipe(
       Effect.catch((error) =>

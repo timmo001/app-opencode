@@ -102,7 +102,7 @@ For GitHub, ask the agent to run `gh auth login`, or run it from OpenCode's term
 
 ## Git
 
-Git comes set up with some defaults: new repositories start on `main`, commit messages open in Neovim, `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Your name, email and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
+Git comes set up with some defaults: new repositories start on `main`, commit messages open in Neovim, `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Once you've signed in with `gh auth login`, the app sets your Git name and email from your GitHub account on its next start, if they aren't set already, using GitHub's noreply address when your email is private. They and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
 
 ## Documentation
 

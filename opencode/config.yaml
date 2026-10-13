@@ -1,7 +1,7 @@
 ---
 name: OpenCode
 # Set to the release version at release time.
-version: 0.1.0
+version: 0.1.1
 slug: opencode
 description: An AI coding agent for your Home Assistant setup, powered by OpenCode
 url: https://github.com/timmo001/app-opencode
@@ -21,8 +21,11 @@ ports_description:
 watchdog: tcp://[HOST]:[PORT:49374]
 map:
   - type: addon_config
+    read_only: false
   - type: homeassistant_config
+    read_only: false
   - type: share
+    read_only: false
 # Installed tools come back from mise on the next start, so backups skip them.
 backup_exclude:
   - home/.cache

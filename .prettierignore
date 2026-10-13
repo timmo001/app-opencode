@@ -3,6 +3,7 @@ dist/
 build/
 bun.lock
 skills-lock.json
+opencode/CHANGELOG.md
 .agents/
 *.png
 *.ico

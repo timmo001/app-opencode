@@ -1,0 +1,22 @@
+---
+# lazygit's defaults, copied to /etc/xdg/lazygit/config.yml. Your own config in
+# ~/.config/lazygit/config.yml replaces this file.
+customCommands:
+  # gh-poi is installed the first time this runs, which needs `gh auth login`.
+  - key: <c-b>
+    context: localBranches
+    command: >-
+      gh poi || { gh extension install seachicken/gh-poi && gh poi; }
+    description: Clean up merged branches
+    output: terminal
+  - key: <c-f>
+    context: localBranches
+    command: >-
+      remote=origin;
+      git remote get-url upstream > /dev/null 2>&1 && remote=upstream;
+      branch="$(git ls-remote --symref "$remote" HEAD
+      | sed -n 's#^ref: refs/heads/\([^[:space:]]*\)[[:space:]]*HEAD$#\1#p')";
+      git fetch "$remote" "+refs/heads/$branch:refs/remotes/$remote/$branch"
+      && git rebase --autostash "$remote/$branch"
+    description: Fetch and rebase onto remote default branch
+    output: terminal

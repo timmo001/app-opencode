@@ -45,6 +45,10 @@ alias gcm='git commit -m'
 alias gcam='git commit -a -m'
 alias gcad='git commit -a --amend'
 
+if command -v lazygit &> /dev/null; then
+  alias lg='lazygit'
+fi
+
 if command -v zoxide &> /dev/null; then
   eval "$(zoxide init bash)"
 

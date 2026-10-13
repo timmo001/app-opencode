@@ -58,6 +58,7 @@ OpenCode's terminal runs bash with tab completion that cycles through matches, a
 - `eza`: `ls`, `lsa`, `lt` and `lta`
 - `zoxide`: `cd` that also jumps to folders you've used
 - `fzf` and `bat`: `Ctrl+R` searches your history, and `ff` finds a file with a preview
+- `lazygit`: `lg`
 
 There are short Git aliases too, such as `g` for `git`. To change the prompt, add `/data/home/.config/starship.toml`. For your own aliases, add `/data/home/.bash_profile`, which the terminal reads after the app's defaults.
 
@@ -103,6 +104,8 @@ For GitHub, ask the agent to run `gh auth login`, or run it from OpenCode's term
 ## Git
 
 Git comes set up with some defaults: new repositories start on `main`, commit messages open in Neovim, `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Once you've signed in with `gh auth login`, the app sets your Git name and email from your GitHub account on its next start, if they aren't set already, using GitHub's noreply address when your email is private. They and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
+
+lazygit adds two keys in the branches panel: `Ctrl+B` cleans up merged branches with [gh-poi](https://github.com/seachicken/gh-poi), which it installs the first time, and `Ctrl+F` fetches and rebases onto the default branch, from `upstream` when there is one. Your own `/data/home/.config/lazygit/config.yml` replaces these.
 
 ## Documentation
 

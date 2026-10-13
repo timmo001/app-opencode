@@ -96,6 +96,11 @@ jobs:
 
       - name: Check the options were installed
         run: |
+          # System packages install in the background once OpenCode is up.
+          for _ in $(seq 1 90); do
+            docker exec app tree --version && break
+            sleep 2
+          done
           docker exec app tree --version
           docker exec app fd --version
           sudo test -f config/opencode.json

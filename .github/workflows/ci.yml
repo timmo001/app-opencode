@@ -86,7 +86,11 @@ jobs:
           exit 1
 
       - name: Check pairing
-        run: curl -sf -X POST http://127.0.0.1:8099/api/pair | jq -e '.code | length > 0'
+        run: >-
+          curl -sf -X POST -H 'content-type: application/json' -d '{"host":"127.0.0.1"}'
+          http://127.0.0.1:8099/api/pair
+          | jq -e '(.links[0].url | test("^http://127\\.0\\.0\\.1:49374/auth/connect/.+"))
+          and (.qr | startswith("<svg"))'
 
       - name: Check the options were installed
         run: |

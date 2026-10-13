@@ -1,1 +1,1 @@
-First release for OpenCode 2. The app runs OpenCode's server in Home Assistant, with a sidebar page, optional remote access through OpenTunnel, and system packages and tools you can add from the app's options. Images are prebuilt for amd64 and aarch64.
+Clearer logs: each entry is one line, tool installs log a summary instead of every line mise prints, and an error that stops the app says what went wrong instead of printing a stack trace.

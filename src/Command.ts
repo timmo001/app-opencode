@@ -16,11 +16,6 @@ export class CommandError extends Schema.TaggedError<CommandError>()('CommandErr
   }
 }
 
-export interface Options extends ChildProcess.CommandOptions {
-  /** Log each line the command prints. On by default. */
-  readonly log?: boolean;
-}
-
 export interface Result {
   readonly stdout: string;
   readonly stderr: string;
@@ -28,20 +23,20 @@ export interface Result {
 
 /**
  * Runs a command to completion with its arguments passed as they are, never
- * through a shell, and fails when it exits with anything but 0.
+ * through a shell, and fails when it exits with anything but 0. Its output
+ * isn't logged: callers log what happened, and a failure keeps the output.
  */
 export const run = Effect.fn('Command.run')(function* (
   command: string,
   args: ReadonlyArray<string>,
-  options: Options = {}
+  options: ChildProcess.CommandOptions = {}
 ) {
-  const { log = true, ...commandOptions } = options;
   const name = [command, ...args.slice(0, 2)].join(' ');
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const failed = (cause: unknown) => new CommandError({ command: name, output: '', cause });
 
   const handle = yield* spawner
-    .spawn(ChildProcess.make(command, args, commandOptions))
+    .spawn(ChildProcess.make(command, args, options))
     .pipe(Effect.mapError(failed));
 
   const [stdout, stderr] = yield* Effect.all(
@@ -51,13 +46,6 @@ export const run = Effect.fn('Command.run')(function* (
     ],
     { concurrency: 'unbounded' }
   ).pipe(Effect.mapError(failed));
-
-  if (log) {
-    for (const line of `${stdout}${stderr}`.split('\n')) {
-      if (line.trim() !== '')
-        yield* Effect.logInfo(line).pipe(Effect.annotateLogs('command', command));
-    }
-  }
 
   const exitCode = yield* handle.exitCode.pipe(Effect.mapError(failed));
 

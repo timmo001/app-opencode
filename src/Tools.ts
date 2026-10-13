@@ -91,15 +91,11 @@ export const layer = Layer.effect(
       );
 
     // Run from an empty folder of the app's own, so no project's mise.toml is in effect.
-    const mise = (
-      args: ReadonlyArray<string>,
-      extra: { readonly log?: boolean; readonly env?: Record<string, string> } = {}
-    ) =>
+    const mise = (args: ReadonlyArray<string>, env: Record<string, string> = {}) =>
       Command.run('mise', args, {
         cwd: paths.state,
         extendEnv: true,
-        env: { MISE_YES: '1', ...extra.env },
-        log: extra.log ?? true,
+        env: { MISE_YES: '1', ...env },
       }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
 
     // Only the system config: the global config is pointed at it too, so your layers aren't read.
@@ -109,8 +105,8 @@ export const layer = Layer.effect(
     };
 
     const serverOpenCode = Effect.gen(function* () {
-      const which = yield* mise(['which', 'opencode'], { log: false, env: systemOnly });
-      const current = yield* mise(['current', openCodeTool], { log: false, env: systemOnly });
+      const which = yield* mise(['which', 'opencode'], systemOnly);
+      const current = yield* mise(['current', openCodeTool], systemOnly);
 
       return { path: which.stdout.trim(), version: current.stdout.trim() };
     }).pipe(toolsError('Finding the server’s OpenCode'));
@@ -132,9 +128,9 @@ export const layer = Layer.effect(
       // One at a time, so a package that doesn't exist only skips itself.
       for (const name of options.system_packages) {
         yield* apt(['install', '-y', '--no-install-recommends', name]).pipe(
-          Effect.catch(() =>
+          Effect.catch((error) =>
             warn(
-              `System package "${name}" couldn't be installed. Check the name on packages.debian.org.`
+              `System package "${name}" couldn't be installed. Check the name on packages.debian.org. ${error.message}`
             )
           )
         );
@@ -144,14 +140,20 @@ export const layer = Layer.effect(
     const installTools = Effect.gen(function* () {
       const installed: Array<{ readonly name: string; readonly version: string }> = [];
 
+      if (options.tools.length > 0) {
+        yield* Effect.logInfo(`Installing tools: ${options.tools.join(', ')}`);
+      }
+
       for (const entry of options.tools) {
         const tool = parseTool(entry);
 
         // Installed before it goes in the config, so an entry mise can't resolve never breaks it.
         yield* mise(['install', `${tool.name}@${tool.version}`]).pipe(
           Effect.andThen(Effect.sync(() => installed.push(tool))),
-          Effect.catch(() =>
-            warn(`Tool "${entry}" couldn't be installed. Check it with \`mise registry\`.`)
+          Effect.catch((error) =>
+            warn(
+              `Tool "${entry}" couldn't be installed. Check it with \`mise registry\`. ${error.message}`
+            )
           )
         );
       }
@@ -187,7 +189,7 @@ export const layer = Layer.effect(
 
       // `mise upgrade` would reinstall into the image's folder, which is lost on restart, so each newer
       // version is installed by name instead: that goes into $HOME, which is kept in /data.
-      const { stdout } = yield* mise(['outdated', '--json'], { log: false }).pipe(
+      const { stdout } = yield* mise(['outdated', '--json']).pipe(
         toolsError('Checking for updates')
       );
 

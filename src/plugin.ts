@@ -1,5 +1,5 @@
 import { Plugin } from '@opencode/plugin/effect';
-import { Effect, Schema } from 'effect';
+import { Effect, Result, Schema } from 'effect';
 
 /**
  * Adds `/app-update`, which asks the app to update OpenCode and the built-in tools, reports what
@@ -39,24 +39,55 @@ const control = (path: string) =>
     catch: (cause) => new AppUpdateError({ message: `The app didn't answer: ${String(cause)}` }),
   });
 
+/**
+ * The session shows a plugin's message as its one-line description, so that line is the whole
+ * report. The text, which the model reads, has the same with a line per tool.
+ */
 const report = (result: typeof UpdateResult.Type) => {
-  const lines =
-    result.updated.length === 0
-      ? ['Everything is up to date.']
-      : result.updated.map((update) => `- ${update.tool}: ${update.from ?? 'new'} → ${update.to}`);
+  const updates = result.updated.map(
+    (update) => `${update.tool} ${update.from ?? 'new'} → ${update.to}`
+  );
 
-  if (result.failed.length > 0) lines.push('', `Couldn't update: ${result.failed.join(', ')}`);
+  const summary = [
+    updates.length === 0 ? 'Everything is up to date' : `Updated ${updates.join(', ')}`,
+    ...(result.failed.length > 0 ? [`couldn't update ${result.failed.join(', ')}`] : []),
+    ...(result.restartNeeded
+      ? [
+          `OpenCode ${result.openCode.after} restarts now, stopping anything running in other sessions. Reload the page once it's back`,
+        ]
+      : []),
+  ].join('. ');
 
-  if (result.restartNeeded) {
-    lines.push(
-      '',
-      `OpenCode ${result.openCode.after} is installed. OpenCode restarts now, which stops anything ` +
-        'running in other sessions. Reload the page once it is back.'
-    );
+  return {
+    description: `App update: ${summary}.`,
+    text: [
+      'The Home Assistant app updated its tools.',
+      ...(updates.length === 0
+        ? ['Everything is up to date.']
+        : updates.map((line) => `- ${line}`)),
+      ...(result.failed.length > 0 ? [`Couldn't update: ${result.failed.join(', ')}`] : []),
+      ...(result.restartNeeded ? [`OpenCode ${result.openCode.after} restarts now.`] : []),
+    ].join('\n'),
+  };
+};
+
+const failure = (message: string) => ({
+  description: `App update failed: ${message}`,
+  text: `The Home Assistant app couldn't update its tools: ${message}`,
+  metadata: { state: 'error' },
+});
+
+const update = Effect.gen(function* () {
+  const response = yield* control('/update');
+
+  if (!response.ok) {
+    const body = yield* Schema.decodeUnknownEffect(ErrorBody)(response.body);
+
+    return yield* new AppUpdateError({ message: body.error });
   }
 
-  return lines.join('\n');
-};
+  return yield* Schema.decodeUnknownEffect(UpdateResult)(response.body);
+});
 
 export default Plugin.define({
   id: 'opencode-app',
@@ -66,24 +97,17 @@ export default Plugin.define({
         name: 'app-update',
         description: 'Update OpenCode and the tools the Home Assistant app comes with',
         execute: Effect.fn(function* (input) {
-          const response = yield* control('/update');
-
-          if (!response.ok) {
-            const body = yield* Schema.decodeUnknownEffect(ErrorBody)(response.body);
-
-            return yield* new AppUpdateError({ message: body.error });
-          }
-
-          const result = yield* Schema.decodeUnknownEffect(UpdateResult)(response.body);
+          const result = yield* update.pipe(Effect.result);
 
           yield* ctx.session.synthetic({
             sessionID: input.sessionID,
-            text: report(result),
-            description: 'App update',
+            ...(Result.isSuccess(result)
+              ? report(result.success)
+              : failure(result.failure.message)),
             resume: false,
           });
 
-          if (result.restartNeeded) yield* control('/restart');
+          if (Result.isSuccess(result) && result.success.restartNeeded) yield* control('/restart');
         }),
       });
     });

@@ -1,1 +1,1 @@
-Clearer logs: each entry is one line, tool installs log a summary instead of every line mise prints, and an error that stops the app says what went wrong instead of printing a stack trace.
+`/app-update` now shows its result in the session, such as "Everything is up to date" or what it updated, and says why when an update fails.

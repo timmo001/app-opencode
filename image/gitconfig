@@ -1,0 +1,37 @@
+# Git's defaults for the app, copied to /etc/gitconfig. Your own ~/.gitconfig in /data/home
+# is read after this, so anything set there wins.
+
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	lg = log --oneline --decorate --graph -n 25
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+	writeCommitGraph = true
+[rebase]
+	updateRefs = true
+[merge]
+	conflictStyle = zdiff3
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+[difftool]
+	prompt = false
+[commit]
+	verbose = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = -version:refname
+[rerere]
+	enabled = true
+	autoUpdate = true

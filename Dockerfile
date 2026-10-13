@@ -48,6 +48,7 @@ COPY image/mise.toml /etc/mise/config.toml
 COPY image/profile.sh /etc/profile.d/mise.sh
 COPY image/bashrc /etc/bash.bashrc
 COPY image/inputrc /etc/opencode-app/inputrc
+COPY image/gitconfig /etc/gitconfig
 
 # Node and aube first, since the npm tools install with them. Caches go with the layer.
 RUN HOME=/root mise install --system node aqua:aubepkg/aube \

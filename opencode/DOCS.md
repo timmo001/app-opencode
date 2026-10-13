@@ -100,6 +100,10 @@ Connect a model provider from OpenCode with `/connect`. See [OpenCode's provider
 
 For GitHub, ask the agent to run `gh auth login`, or run it from OpenCode's terminal. The sign-in is kept in `/data/home`.
 
+## Git
+
+Git comes set up with some defaults: `git pull` rebases, `git push` sets up the remote branch, fetches prune deleted branches, conflicts show the common ancestor (`zdiff3`), branches list newest first, and resolved conflicts are remembered (`rerere`). There are short aliases such as `git st` and `git lg` too. Your name, email and anything else you set with `git config --global` go in `/data/home/.gitconfig`, which is kept and wins over the defaults.
+
 ## Documentation
 
 See [OpenCode's documentation](https://opencode.ai/docs).

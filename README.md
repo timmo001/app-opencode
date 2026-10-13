@@ -13,7 +13,7 @@ The images are prebuilt for amd64 and aarch64 on GitHub's container registry.
 
 [![Add this repository to your Home Assistant.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftimmo001%2Fapp-opencode)
 
-1. Add this repository to your Home Assistant app store.
+1. Add this repository to your Home Assistant app store, or [add all my apps at once](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftimmo001%2Fhome-assistant-apps). Add one or the other, not both: Home Assistant treats them as different apps, so moving between them starts with empty settings and data.
 2. Install the OpenCode app and start it.
 3. Open **OpenCode** in the sidebar.
 

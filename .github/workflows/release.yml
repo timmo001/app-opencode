@@ -65,3 +65,15 @@ jobs:
       changelog-path: opencode/CHANGELOG.md
     secrets:
       token: ${{ secrets.RELEASE_COMMIT_TOKEN }}
+
+  # Asks timmo001/home-assistant-apps to copy this release's app folder, now
+  # its image is pushed.
+  home-assistant-apps:
+    name: Home Assistant apps repository
+    needs: image
+    # yamllint disable-line rule:line-length
+    uses: timmo001/workflows/.github/workflows/home-assistant-app-dispatch.yml@996dd60d03b12f28b482074a9eed7083a18e2439 # 20261013.1
+    with:
+      repository: timmo001/home-assistant-apps
+    secrets:
+      token: ${{ secrets.RELEASE_COMMIT_TOKEN }}

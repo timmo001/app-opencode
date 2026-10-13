@@ -27,8 +27,10 @@ export interface ServerOpenCode {
 }
 
 export interface Interface {
-  /** Installs the `system_packages` and `tools` options. Never fails: a bad entry is a warning. */
+  /** Installs the `tools` option. Never fails: a bad entry is a warning. */
   readonly applyOptions: Effect.Effect<void>;
+  /** Installs the `system_packages` option, which takes minutes. Never fails: a bad entry is a warning. */
+  readonly installPackages: Effect.Effect<void>;
   /** Installs the newest version each built-in and global tool allows, one upgrade at a time. */
   readonly upgrade: Effect.Effect<UpgradeResult, ToolsError>;
   /** The OpenCode the server runs, resolved from the system config alone, so your layers can't change it. */
@@ -92,11 +94,12 @@ export const layer = Layer.effect(
       );
 
     // Run from an empty folder of the app's own, so no project's mise.toml is in effect.
-    const mise = (args: ReadonlyArray<string>, env: Record<string, string> = {}) =>
+    const mise = (args: ReadonlyArray<string>, env: Record<string, string> = {}, log = false) =>
       Command.run('mise', args, {
         cwd: paths.state,
         extendEnv: true,
         env: { MISE_YES: '1', ...env },
+        log,
       }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
 
     // Only the system config: the global config is pointed at it too, so your layers aren't read.
@@ -116,6 +119,7 @@ export const layer = Layer.effect(
       Command.run('apt-get', args, {
         extendEnv: true,
         env: { DEBIAN_FRONTEND: 'noninteractive' },
+        log: true,
       }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
 
     const installPackages = Effect.gen(function* () {
@@ -153,21 +157,25 @@ export const layer = Layer.effect(
 
         // All at once first, so mise installs what a tool's backend needs before it, such as uv
         // for pypi tools. A bad entry doesn't stop the rest, and the loop below finds it.
-        yield* mise([
-          'install',
-          ...options.tools.map((entry) => {
-            const tool = parseTool(entry);
+        yield* mise(
+          [
+            'install',
+            ...options.tools.map((entry) => {
+              const tool = parseTool(entry);
 
-            return `${tool.name}@${tool.version}`;
-          }),
-        ]).pipe(Effect.ignore);
+              return `${tool.name}@${tool.version}`;
+            }),
+          ],
+          {},
+          true
+        ).pipe(Effect.ignore);
       }
 
       for (const entry of options.tools) {
         const tool = parseTool(entry);
 
         // Installed before it goes in the config, so an entry mise can't resolve never breaks it.
-        yield* mise(['install', `${tool.name}@${tool.version}`]).pipe(
+        yield* mise(['install', `${tool.name}@${tool.version}`], {}, true).pipe(
           Effect.andThen(Effect.sync(() => installed.push(tool))),
           Effect.catch((error) =>
             warn(
@@ -200,7 +208,6 @@ export const layer = Layer.effect(
 
     const applyOptions = Effect.gen(function* () {
       yield* Ref.set(warningsRef, []);
-      yield* installPackages;
       yield* installTools;
       yield* mise(['reshim']).pipe(Effect.ignore);
       // Versions no config uses any more, such as ones replaced by an upgrade. Nothing runs from them yet.
@@ -225,7 +232,7 @@ export const layer = Layer.effect(
       const failed: Array<string> = [];
 
       for (const [tool, versions] of Object.entries(outdated)) {
-        yield* mise(['install', `${tool}@${versions.latest}`]).pipe(
+        yield* mise(['install', `${tool}@${versions.latest}`], {}, true).pipe(
           Effect.andThen(
             Effect.sync(() =>
               updated.push({ tool, from: versions.current ?? undefined, to: versions.latest })
@@ -254,6 +261,7 @@ export const layer = Layer.effect(
 
     return Service.of({
       applyOptions,
+      installPackages: installPackages.pipe(Effect.withSpan('Tools.installPackages')),
       upgrade,
       serverOpenCode,
       warnings: Ref.get(warningsRef),

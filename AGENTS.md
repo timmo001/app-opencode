@@ -6,7 +6,7 @@ Guidelines for AI coding agents working in this repository.
 
 A Home Assistant app that runs OpenCode 2. The image is built from the root `Dockerfile` and published, prebuilt for amd64 and aarch64, to `ghcr.io/timmo001/app-opencode`. The Supervisor pulls it; it never builds it.
 
-- `src/` is the entrypoint, an Effect v4 program compiled with Bun to `/usr/local/bin/opencode-app`. It prepares `/data/home`, installs the `system_packages` and `tools` options, keeps tools up to date, runs `opencode serve --service` and serves the sidebar page on the ingress port.
+- `src/` is the entrypoint, an Effect v4 program compiled with Bun to `/usr/local/bin/opencode-app`. It prepares `/data/home`, installs the `tools` option, keeps tools up to date, runs `opencode serve --service`, serves the sidebar page on the ingress port and then installs the `system_packages` option in the background.
 - `src/plugin.ts` is an OpenCode plugin, bundled with `effect` and `@opencode/plugin` external, that adds `/app-update`. It talks to the entrypoint over the control socket.
 - `image/mise.toml` is the image's built-in tools, copied to `/etc/mise/config.toml`.
 - `opencode/` holds the app's metadata only: `config.yaml`, `DOCS.md`, `translations/` and the icons.

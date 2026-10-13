@@ -29,7 +29,16 @@ const startup = Layer.effectDiscard(
   })
 );
 
-const app = Layer.mergeAll(Control.layer, Ingress.layer).pipe(
+/** System packages take minutes, so they install in the background once OpenCode is up. */
+const packages = Layer.effectDiscard(
+  Effect.gen(function* () {
+    const tools = yield* Tools.Service;
+
+    yield* tools.installPackages.pipe(Effect.forkScoped);
+  })
+);
+
+const app = Layer.mergeAll(Control.layer, Ingress.layer, packages).pipe(
   Layer.provideMerge(Updates.layer),
   Layer.provideMerge(OpenCodeServer.layer),
   Layer.provideMerge(startup),

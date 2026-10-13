@@ -27,7 +27,7 @@ Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco
 
 ### `system_packages`
 
-Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time, which slows the start: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
+Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
 
 The default list is `build-essential`, `dnsutils`, `ffmpeg`, `iputils-ping`, `rsync`, `sqlite3` (for Home Assistant's history database) and `tmux`.
 

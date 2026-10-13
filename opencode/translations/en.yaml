@@ -15,8 +15,9 @@ configuration:
   system_packages:
     name: System packages
     description: >-
-      Debian packages to install with apt each time the app starts, such as build-essential.
-      Packages that can't be found are skipped and shown on the sidebar page.
+      Debian packages to install with apt each time the app starts, such as build-essential. They
+      install in the background once OpenCode is up. Packages that can't be found are skipped and
+      shown on the sidebar page.
   tools:
     name: Tools
     description: >-

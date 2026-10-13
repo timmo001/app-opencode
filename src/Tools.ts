@@ -142,6 +142,17 @@ export const layer = Layer.effect(
 
       if (options.tools.length > 0) {
         yield* Effect.logInfo(`Installing tools: ${options.tools.join(', ')}`);
+
+        // All at once first, so mise installs what a tool's backend needs before it, such as uv
+        // for pypi tools. A bad entry doesn't stop the rest, and the loop below finds it.
+        yield* mise([
+          'install',
+          ...options.tools.map((entry) => {
+            const tool = parseTool(entry);
+
+            return `${tool.name}@${tool.version}`;
+          }),
+        ]).pipe(Effect.ignore);
       }
 
       for (const entry of options.tools) {

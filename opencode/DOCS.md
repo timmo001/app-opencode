@@ -23,13 +23,15 @@ Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco
 
 ### `system_packages`
 
-Debian packages to install with apt, such as `build-essential`. The container's filesystem is reset on every start, so they're installed again each time: keep the list short. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
+Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time, which slows the start: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
+
+The default list is `build-essential`, `dnsutils`, `ffmpeg`, `iputils-ping`, `rsync`, `sqlite3` (for Home Assistant's history database) and `tmux`.
 
 ### `tools`
 
 Developer tools to install with [mise](https://mise.jdx.dev), as `name`, `name@version` or `backend:name@version`, such as `go@1.27` or `npm:prettier@3`. They're installed once and kept between restarts. Without a version, you get the newest, and the app keeps it up to date. A tool mise can't install is skipped, and shown on the sidebar page and in the app's log.
 
-The default list is `python`, `uv`, `pnpm`, `fd`, `yq` and `shellcheck`. Remove any you don't want.
+The default list is `actionlint`, `bat`, `deno`, `fd`, `fzf`, `go`, `hyperfine`, `just`, `lazygit`, `npm:skills`, `pitchfork`, `pnpm`, `pypi:yamllint`, `python`, `ruff`, `shellcheck`, `shfmt`, `uv`, `watchexec` and `yq`. Remove any you don't want.
 
 ## Preinstalled tools
 

@@ -1,1 +1,1 @@
-`/app-update` now shows its result in the session, such as "Everything is up to date" or what it updated, and says why when an update fails.
+More tools and system packages by default, such as Go, Deno, ruff, yamllint and sqlite3. They only apply to new installs, so add any you want to your own options. Tools that need another tool to install, such as pypi tools needing uv, now install on the first start, and a tool that can't be installed says why.

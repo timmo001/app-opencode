@@ -8,11 +8,13 @@ export class CommandError extends Schema.TaggedError<CommandError>()('CommandErr
   cause: Schema.optional(Schema.Defect()),
 }) {
   override get message() {
-    const last = this.output.trim().split('\n').at(-1) ?? '';
+    const lines = this.output.trim().split('\n');
+    // A tool that marks its errors, as mise does, ends with hints, so its first error says more.
+    const reason = lines.find((line) => line.includes('ERROR')) ?? lines.at(-1) ?? '';
 
     return this.exitCode === undefined
       ? `${this.command} could not start`
-      : `${this.command} exited with ${this.exitCode}${last === '' ? '' : `: ${last}`}`;
+      : `${this.command} exited with ${this.exitCode}${reason === '' ? '' : `: ${reason.trim()}`}`;
   }
 }
 

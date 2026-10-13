@@ -42,6 +42,7 @@ RUN apt-get update \
 
 COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
 COPY image/mise.toml /etc/mise/config.toml
+COPY image/profile.sh /etc/profile.d/mise.sh
 
 # Node and aube first, since the npm tools install with them. Caches go with the layer.
 RUN HOME=/root mise install --system node aqua:aubepkg/aube \

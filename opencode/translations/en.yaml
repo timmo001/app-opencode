@@ -1,19 +1,25 @@
 ---
 configuration:
-  log_level:
-    name: Log level
-    description: >-
-      Controls the level of log details the app provides.
   server_password:
     name: Server password
     description: >-
-      Optional password to protect the OpenCode server. When set,
-      HTTP Basic authentication will be required (username: opencode).
-  repositories:
-    name: Repositories
+      Protects OpenCode on your network and through remote access, with the username opencode.
+      Leave it empty to sign in from the sidebar only, with a link that works once.
+  remote_access:
+    name: Remote access
     description: >-
-      List of GitHub repositories to clone on startup. Specify in
-      the format "owner/repo" (e.g., "octocat/Hello-World").
-      Repositories are cloned to /data/repos/<repo-name>.
+      Reach OpenCode from anywhere through OpenTunnel, at a private address the sidebar page opens
+      for you. Anyone with the address and the password can use OpenCode, so set a password first.
+  system_packages:
+    name: System packages
+    description: >-
+      Debian packages to install with apt each time the app starts, such as build-essential.
+      Packages that can't be found are skipped and shown on the sidebar page.
+  tools:
+    name: Tools
+    description: >-
+      Developer tools to install with mise, as name, name@version or backend:name@version, such
+      as go@1.27 or npm:prettier@3. They're kept between restarts and updated with the app's
+      built-in tools.
 network:
-  4096/tcp: OpenCode web interface
+  49374/tcp: OpenCode on your network (web UI and API)

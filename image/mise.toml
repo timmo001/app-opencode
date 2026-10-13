@@ -1,0 +1,18 @@
+# The tools the app comes with, installed into the image and kept up to date by the app.
+# Copied to /etc/mise/config.toml, mise's system config. Your own tools go in the app's
+# config folder (mise.toml), which can't change these.
+
+[tools]
+node = "latest"
+bun = "latest"
+"aqua:aubepkg/aube" = "latest"
+gh = "latest"
+jq = "latest"
+ripgrep = "latest"
+# OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.
+"npm:@opencode/cli" = { version = "2", allow_builds = true }
+
+[settings]
+npm.package_manager = "aube"
+# Packages come from the image's apt, which the app runs as root.
+system_packages.sudo = false

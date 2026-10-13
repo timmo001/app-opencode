@@ -1,13 +1,35 @@
 {
   "name": "app-opencode",
-  "version": "1.0.0",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "bun run build:app && bun run build:plugin",
+    "build:app": "bun build src/main.ts --compile --minify --format=esm --keep-names --no-compile-autoload-dotenv --no-compile-autoload-bunfig --outfile dist/opencode-app",
+    "build:plugin": "bun build src/plugin.ts --target bun --format esm --external effect --external 'effect/*' --external '@opencode/plugin' --external '@opencode/plugin/*' --outfile dist/plugin.js",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check": "bun run lint && bun run typecheck && bun run format:check"
+  },
+  "dependencies": {
+    "@effect/platform-bun": "4.0.1",
+    "@opencode/client": "2.0.28",
+    "@opencode/plugin": "2.0.28",
+    "effect": "4.0.1"
   },
   "devDependencies": {
-    "prettier": "^3.4.2"
+    "@oxlint/plugins": "1.87.0",
+    "@timmo001/oxlint-rules": "0.6.2",
+    "@types/bun": "1.4.3",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "@effect/platform-node-shared": "4.0.1"
   }
 }

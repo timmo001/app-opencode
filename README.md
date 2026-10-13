@@ -1,31 +1,33 @@
-# Home Assistant OpenCode App
+# OpenCode for Home Assistant
 
-AI coding agent with web interface powered by OpenCode.
+A Home Assistant app that runs [OpenCode](https://opencode.ai) 2, an AI coding agent, with your Home Assistant configuration to hand.
 
-## About
+- Opens OpenCode from the Home Assistant sidebar, signed in with a link that works once
+- Optional remote access through OpenTunnel
+- OpenCode and its tools update themselves, without waiting for an app release
+- Debian packages and [mise](https://mise.jdx.dev) tools from the app's options
 
-This app runs [OpenCode](https://opencode.ai) as a web-based AI coding agent for Home Assistant. OpenCode provides a powerful interface for AI-assisted coding and automation.
-
-## Features
-
-- Web-based interface accessible via Home Assistant sidebar
-- Direct port access on port 4096
-- Optional server password authentication
-- Full access to Home Assistant configuration and apps
+The images are prebuilt for amd64 and aarch64 on GitHub's container registry.
 
 ## Installation
 
-1. Add this repository to your Home Assistant app store
-2. Install the OpenCode app
-3. Configure your LLM provider API keys in OpenCode
-4. Start the app
+[![Add this repository to your Home Assistant.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftimmo001%2Fapp-opencode)
 
-## Configuration
+1. Add this repository to your Home Assistant app store.
+2. Install the OpenCode app and start it.
+3. Open **OpenCode** in the sidebar.
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `server_password` | Optional password for server authentication |
+See [the app's documentation](opencode/DOCS.md) for the options, the preinstalled tools and where your files live.
 
-## Documentation
+## Development
 
-For more information about OpenCode, visit [opencode.ai/docs](https://opencode.ai/docs).
+The app is a small Effect program, in `src/`, that prepares the home folder, installs tools, runs OpenCode's server and serves the sidebar page. `src/plugin.ts` is the OpenCode plugin that adds `/app-update`.
+
+```sh
+mise run check   # Oxlint, TypeScript, Prettier and yamllint
+mise run build   # The entrypoint binary and the plugin, in dist/
+```
+
+## Licence
+
+[Apache-2.0](LICENSE)

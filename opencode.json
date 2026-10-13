@@ -1,0 +1,57 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "~/repos/home-assistant/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/repos/triage/**",
+      "effect": "allow"
+    }
+  ],
+  "references": {
+    "opencode": {
+      "repository": "anomalyco/opencode",
+      "branch": "v2.0.28",
+      "description": "Use for the OpenCode 2 release the app's client and plugin are built against: serve and service mode, service.json, pairing, the web UI, server auth, plugins and config. Move the branch with the @opencode/client and @opencode/plugin versions in package.json."
+    },
+    "opentunnel": {
+      "repository": "anomalyco/opentunnel",
+      "branch": "master",
+      "description": "Use for OpenTunnel, behind OpenCode's remote access: where its identity and certificate are stored, and how routes and tunnels connect"
+    },
+    "supervisor": {
+      "path": "../supervisor",
+      "description": "Use for app config.yaml options, Supervisor roles and API access, ingress, discovery, backups and app networking"
+    },
+    "dev-docs": {
+      "path": "../developers.home-assistant",
+      "description": "Use for the Home Assistant app developer docs under docs/apps: configuration, communication, presentation, security and publishing"
+    },
+    "core": {
+      "path": "../core",
+      "description": "Use for Home Assistant Core APIs the app talks to: the MCP server integration, WebSocket and REST APIs, and hassio ingress"
+    },
+    "frontend": {
+      "path": "../frontend",
+      "description": "Use for how the Home Assistant frontend shows app panels and ingress iframes"
+    },
+    "docker-base": {
+      "repository": "home-assistant/docker-base",
+      "branch": "master",
+      "description": "Use for Home Assistant base images: s6-overlay, bashio and the Debian and Alpine variants"
+    },
+    "triage": {
+      "path": "~/repos/triage",
+      "description": "Use as the model Home Assistant app: config.yaml, ingress behind the Supervisor, the root app image target, prebuilt multi-arch GHCR images and the release workflow"
+    },
+    "music-assistant": {
+      "repository": "music-assistant/server",
+      "branch": "dev",
+      "description": "Use for Music Assistant's WebSocket API and how its Home Assistant app exposes it, when connecting OpenCode to it"
+    }
+  }
+}

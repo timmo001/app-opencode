@@ -1,0 +1,43 @@
+min_version = "2025.1.0"
+
+[tools]
+node = "26.11.1"
+bun = "1.4.3"
+"pypi:yamllint" = "1.38.0"
+
+[tasks.install]
+description = "Install dependencies"
+run = "bun install"
+
+[tasks.build]
+description = "Compile the entrypoint program and the OpenCode plugin into dist"
+depends = ["install"]
+run = "bun run build"
+
+[tasks.lint]
+description = "Lint the TypeScript with Oxlint"
+depends = ["install"]
+run = "bun run lint"
+
+[tasks.typecheck]
+description = "Type check the TypeScript"
+depends = ["install"]
+run = "bun run typecheck"
+
+[tasks."format:check"]
+description = "Check formatting with Prettier"
+depends = ["install"]
+run = "bun run format:check"
+
+[tasks.format]
+description = "Format with Prettier"
+depends = ["install"]
+run = "bun run format"
+
+[tasks."lint:yaml"]
+description = "Lint the YAML with yamllint"
+run = "yamllint ."
+
+[tasks.check]
+description = "Lint, type check and check formatting"
+depends = ["lint", "typecheck", "format:check", "lint:yaml"]

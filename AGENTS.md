@@ -1,140 +1,47 @@
-# AGENTS.md - OpenCode Home Assistant Add-on
+# AGENTS.md - OpenCode Home Assistant app
 
 Guidelines for AI coding agents working in this repository.
 
-## Project Overview
+## Project overview
 
-A **Home Assistant add-on** packaging OpenCode into a Docker container. Primary files:
+A Home Assistant app that runs OpenCode 2. The image is built from the root `Dockerfile` and published, prebuilt for amd64 and aarch64, to `ghcr.io/timmo001/app-opencode`. The Supervisor pulls it; it never builds it.
 
-- Shell scripts (bash with bashio library)
-- YAML configuration files
-- Dockerfile for container builds
+- `src/` is the entrypoint, an Effect v4 program compiled with Bun to `/usr/local/bin/opencode-app`. It prepares `/data/home`, installs the `system_packages` and `tools` options, keeps tools up to date, runs `opencode serve --service` and serves the sidebar page on the ingress port.
+- `src/plugin.ts` is an OpenCode plugin, bundled with `effect` and `@opencode/plugin` external, that adds `/app-update`. It talks to the entrypoint over the control socket.
+- `image/mise.toml` is the image's built-in tools, copied to `/etc/mise/config.toml`.
+- `opencode/` holds the app's metadata only: `config.yaml`, `DOCS.md`, `translations/` and the icons.
 
-**No TypeScript/JavaScript** - this is a deployment/packaging project.
+There's no s6-overlay, no bashio and no hassio-addons base: Debian provides the system and mise everything else.
 
-## Build/Lint/Test Commands
+## Commands
 
-```bash
-npm run format        # Format all files with Prettier
-npm run format:check  # Check formatting only
-yamllint opencode/    # YAML linting (if installed)
-mdl *.md opencode/*.md # Markdown linting (if installed)
-
-# Build Docker image locally (from opencode/ directory)
-docker build --build-arg BUILD_FROM=ghcr.io/hassio-addons/debian-base:9.2.0 \
-             --build-arg BUILD_ARCH=amd64 -t opencode-local .
+```sh
+mise run check      # Oxlint (type aware, no warnings allowed), tsc, Prettier and yamllint
+mise run build      # dist/opencode-app and dist/plugin.js
+mise run format     # Prettier
 ```
 
-## Code Style Guidelines
+There's no Docker locally. CI builds the image for both architectures without pushing.
 
-### File Naming
+## Code style
 
-| Type          | Convention             | Example                     |
-| ------------- | ---------------------- | --------------------------- |
-| Config files  | lowercase with hyphens | `build.yaml`, `config.yaml` |
-| Shell scripts | lowercase              | `repositories.sh`, `run`    |
-| Documentation | UPPERCASE.md           | `DOCS.md`, `README.md`      |
+- Use the `effect` and `effect-service-design` skills. Each module is a `Context.Service` with a `layer`, errors are `Schema.TaggedError`, and modules end with `export * as Name from './Name.js'`.
+- Child processes go through `Command.run` or the Effect `ChildProcessSpawner`, with arguments as an array. Option values never reach a shell.
+- Oxlint uses `@timmo001/oxlint-rules` with `maxWarnings: 0`.
+- Pin JavaScript dependencies to exact versions.
+- YAML starts with `---`, uses 2 spaces and block-style lists.
 
-### Shell Scripts
+## Key conventions
 
-Use the `shell-scripts` skill for detailed patterns. Quick reference:
+- Persistent data lives in `/data`; `HOME` is `/data/home`. The user's OpenCode config (`opencode.json`, `AGENTS.md`, `skills`, `mise.toml`) lives in the app's config folder at `/config` and is linked into `~/.config` on every start.
+- Built-in tools are installed into mise's system folders in the image. Upgrades go into `$HOME/.local/share/mise` with `mise install tool@version`, never `mise upgrade`, which would write into the image and be lost.
+- The server's OpenCode is resolved from the system config alone, so the user's mise layers can't change it.
+- OpenCode stays on major version 2 in `image/mise.toml`; a new major needs a client and plugin built for it.
 
-```bash
-#!/command/with-contenv bashio
-readonly REPOS_DIR="/data/repos"     # Constants: SCREAMING_SNAKE_CASE + readonly
-repo_path="${REPOS_DIR}/${repo_name}" # Local vars: lowercase_underscores
-bashio::log.info "Message"            # Logging via bashio
-value=$(bashio::config 'key')         # Config access via bashio
-```
+## Skills
 
-Always quote variables: `"${variable}"`
-
-### YAML Files
-
-- Must begin with `---`
-- 2 spaces indentation (no tabs)
-- Max line length: 120 characters
-- Multi-line strings: use `>-` folded style
-
-```yaml
----
-name: OpenCode
-description: >-
-  Multi-line description folded into single line.
-```
-
-### Dockerfile
-
-Use the `dockerfile` skill for detailed patterns. Quick reference:
-
-```dockerfile
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# Architecture handling - use explicit case statements
-case "${BUILD_ARCH}" in
-    aarch64) ARCH="arm64" ;;
-    amd64) ARCH="amd64" ;;
-    *) echo "Unsupported architecture" && exit 1 ;;
-esac
-
-# hadolint ignore=DL3006
-FROM ${BUILD_FROM}
-```
-
-### Prettier Configuration
-
-Settings: semicolons required, single quotes, 2-space tabs, ES5 trailing commas, 100 char width.
-
-## Architecture
-
-```
-opencode/
-├── build.yaml              # Build configuration
-├── config.yaml             # Add-on configuration schema
-├── DOCS.md                 # User documentation
-├── Dockerfile              # Container build
-├── translations/en.yaml    # Localization
-└── rootfs/                 # Container filesystem overlay
-    ├── etc/cont-init.d/    # S6 initialization scripts
-    ├── etc/services.d/     # S6 service definitions (run + finish)
-    └── root/.config/       # Default configurations
-```
-
-## Key Conventions
-
-### Data Persistence
-
-All persistent data in `/data/`:
-
-- `/data/repos/` - Cloned repositories
-- `/data/.config/gh/` - GitHub CLI config
-- `/data/.gitconfig` - Git configuration
-- `/data/.ssh/` - SSH keys
-
-### S6 Overlay
-
-Use the `s6-overlay` skill for detailed patterns. Quick reference:
-
-- Init scripts: `rootfs/etc/cont-init.d/` (run once at startup, numbered for order)
-- Service scripts: `rootfs/etc/services.d/<service>/` (must have `run`, optionally `finish`)
-
-### Supported Architectures
-
-Both must be supported: `amd64` (x86_64) and `aarch64` (ARM64)
-
-## Available Skills
-
-Load these skills for detailed implementation guidance:
-
-| Skill           | Use When                                                           |
-| --------------- | ------------------------------------------------------------------ |
-| `shell-scripts` | Writing bash scripts with bashio (logging, config, error handling) |
-| `dockerfile`    | Writing Dockerfiles (multi-arch, hadolint, build args)             |
-| `s6-overlay`    | S6 service management (init scripts, run/finish, lifecycle)        |
-
-## Important Notes
-
-1. **Security**: Sandbox mode - external directory access denied by default
-2. **Workspace**: Restricted to `/data`
-3. **No Tests**: No automated test suite
-4. **Build System**: Handled by Home Assistant's add-on build infrastructure
+| Skill                     | Use when                                        |
+| ------------------------- | ----------------------------------------------- |
+| `app-opencode-dockerfile` | Changing the Dockerfile or the image's tools    |
+| `app-opencode-review`     | Reviewing, cleaning up and testing a changeset  |
+| `app-opencode-release`    | Versioning and releasing the app and its images |

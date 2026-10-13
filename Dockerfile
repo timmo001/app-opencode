@@ -1,0 +1,62 @@
+# The OpenCode app for Home Assistant. The Supervisor pulls this image, prebuilt for amd64 and
+# aarch64 by the release workflow, and runs it as root, which it needs for /data and apt.
+#
+# Debian gives the system packages and mise everything else. The tools in image/mise.toml are
+# installed here, into mise's system folders, and updated at runtime into $HOME, which is kept
+# in /data, so OpenCode and its tools stay current without an app release.
+
+FROM oven/bun:1.4.3@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS build
+
+WORKDIR /src
+
+COPY package.json bun.lock ./
+
+RUN bun install --frozen-lockfile
+
+COPY tsconfig.json ./
+COPY src src
+
+RUN bun run build
+
+FROM jdxcode/mise:2026.10.9@sha256:07fc362c08135a926cbb1466470d9af10e89c9aa92859831c0ded2f2249bae7d AS mise
+
+FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS app
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# The packages OpenCode and the agent expect on any machine. The app installs more from its
+# system_packages option on start, so these are kept to what most work needs.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        less \
+        openssh-client \
+        procps \
+        unzip \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
+COPY image/mise.toml /etc/mise/config.toml
+
+# Node and aube first, since the npm tools install with them. Caches go with the layer.
+RUN HOME=/root mise install --system node aqua:aubepkg/aube \
+    && HOME=/root mise install --system \
+    && rm -rf /root/.cache /root/.local
+
+COPY --from=build /src/dist/opencode-app /usr/local/bin/opencode-app
+COPY --from=build /src/dist/plugin.js /usr/local/share/opencode-app/plugin.js
+
+ENV HOME=/data/home \
+    MISE_YES=1 \
+    OPENCODE_DISABLE_AUTOUPDATE=1 \
+    PATH=/data/home/.local/share/mise/shims:/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+WORKDIR /data/home
+
+EXPOSE 8099 49374
+
+ENTRYPOINT ["/usr/local/bin/opencode-app"]

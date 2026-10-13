@@ -1,0 +1,106 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up mise
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+
+      - name: Check
+        run: mise run check
+
+      - name: Build
+        run: mise run build
+
+  # Checks both architectures build, without pushing.
+  image:
+    name: Build images
+    permissions:
+      contents: read
+      packages: write
+    # yamllint disable-line rule:line-length
+    uses: timmo001/workflows/.github/workflows/build-container-image.yml@816cb358079216167ccd46c8b55bd1386a57116a # 20261013.0
+    with:
+      image: ghcr.io/timmo001/app-opencode
+      home-assistant: true
+      push: false
+
+  # Runs the image the way the Supervisor does: as root, with /data and /config mounted and
+  # options.json written by root with mode 0600.
+  smoke:
+    name: Smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Build image
+        run: docker build -t app-opencode:ci .
+
+      - name: Start the app
+        run: |
+          mkdir data config
+          echo '{"remote_access": false, "system_packages": ["tree"], "tools": ["fd"]}' > data/options.json
+          sudo chown -R root:root data config
+          sudo chmod 600 data/options.json
+          # Ingress only answers the Supervisor, which here is the Docker host.
+          docker run -d --name app -v "$PWD/data:/data" -v "$PWD/config:/config" \
+            -e OPENCODE_APP_INGRESS_FROM=172.17.0.1 \
+            -p 8099:8099 -p 49374:49374 app-opencode:ci
+
+      - name: Check OpenCode is running
+        run: |
+          for _ in $(seq 1 120); do
+            if curl -sf http://127.0.0.1:8099/api/status | tee status.json | jq -e '.running != null'; then
+              jq -e '.warnings == []' status.json
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Check pairing
+        run: curl -sf -X POST http://127.0.0.1:8099/api/pair | jq -e '.code | length > 0'
+
+      - name: Check the options were installed
+        run: |
+          docker exec app tree --version
+          docker exec app fd --version
+          sudo test -f config/opencode.json
+          sudo test -L data/home/.config/opencode/plugins/opencode-app.js
+
+      - name: Check the tools option is kept across a restart
+        run: |
+          docker restart app
+          sleep 5
+          sudo test -n "$(sudo find data/home/.local/share/mise/installs -maxdepth 1 -name fd)"
+
+      - name: App logs
+        if: always()
+        run: docker logs app || true

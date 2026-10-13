@@ -1,0 +1,67 @@
+---
+name: Release
+
+# yamllint disable-line rule:truthy
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Read version
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      # The Supervisor pulls the image tag that matches config.yaml, so they must agree.
+      - name: Check the tag matches the app version
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="${TAG#v}"
+          app_version="$(yq -r '.version' opencode/config.yaml)"
+          if [ "$version" != "$app_version" ]; then
+            echo "::error title=Version mismatch::opencode/config.yaml has $app_version, the tag is $TAG."
+            exit 1
+          fi
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+
+  image:
+    name: Image
+    needs: version
+    permissions:
+      contents: read
+      packages: write
+    # yamllint disable-line rule:line-length
+    uses: timmo001/workflows/.github/workflows/build-container-image.yml@816cb358079216167ccd46c8b55bd1386a57116a # 20261013.0
+    with:
+      image: ghcr.io/timmo001/app-opencode
+      version: ${{ needs.version.outputs.version }}
+      home-assistant: true
+
+  changelog:
+    name: Changelog
+    needs: image
+    permissions:
+      contents: read
+    # yamllint disable-line rule:line-length
+    uses: timmo001/workflows/.github/workflows/home-assistant-app-changelog.yml@816cb358079216167ccd46c8b55bd1386a57116a # 20261013.0
+    with:
+      changelog-path: opencode/CHANGELOG.md
+    secrets:
+      token: ${{ secrets.RELEASE_COMMIT_TOKEN }}

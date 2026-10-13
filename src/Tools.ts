@@ -60,8 +60,22 @@ const Outdated = Schema.fromJsonString(
   )
 );
 
+/** `mise ls --installed --json`: every installed version, in your home and the image, by tool. */
+const Installed = Schema.fromJsonString(
+  Schema.Record(
+    Schema.String,
+    Schema.Array(
+      Schema.Struct({
+        version: Schema.String,
+        install_path: Schema.String,
+        active: Schema.optional(Schema.Boolean),
+      })
+    )
+  )
+);
+
 /** Splits a `tools` entry, `[backend:]name[@version]`, keeping the `@` of a scoped npm name. */
-const parseTool = (entry: string) => {
+export const parseTool = (entry: string) => {
   const at = entry.lastIndexOf('@');
 
   return at > 0 && entry[at - 1] !== ':'
@@ -82,6 +96,10 @@ export const layer = Layer.effect(
 
     const systemConfig = yield* Config.String('MISE_SYSTEM_CONFIG_DIR').pipe(
       Config.withDefault('/etc/mise')
+    );
+
+    const systemData = yield* Config.String('MISE_SYSTEM_DATA_DIR').pipe(
+      Config.withDefault('/usr/local/share/mise')
     );
 
     const warningsRef = yield* Ref.make<ReadonlyArray<string>>([]);
@@ -149,18 +167,38 @@ export const layer = Layer.effect(
       );
     });
 
+    // Read without the network. A failure only means everything is installed as if it were new.
+    const listInstalled = mise(['ls', '--installed', '--json']).pipe(
+      Effect.flatMap(({ stdout }) => Schema.decodeUnknownEffect(Installed)(stdout)),
+      Effect.orElseSucceed((): typeof Installed.Type => ({}))
+    );
+
     const installTools = Effect.gen(function* () {
       const installed: Array<{ readonly name: string; readonly version: string }> = [];
+      const present = yield* listInstalled;
 
-      if (options.tools.length > 0) {
-        yield* Log.step(`Installing tools: ${options.tools.join(', ')}`);
+      // The image comes with the default list, and a tool you've had before is kept in $HOME, so
+      // only new entries are installed. Updates are left to the update check.
+      const missing = options.tools.filter((entry) => {
+        const tool = parseTool(entry);
+        const versions = (present[tool.name] ?? []).map((install) => install.version);
+
+        return tool.version === 'latest'
+          ? versions.length === 0
+          : !versions.some(
+              (version) => version === tool.version || version.startsWith(`${tool.version}.`)
+            );
+      });
+
+      if (missing.length > 0) {
+        yield* Log.step(`Installing tools: ${missing.join(', ')}`);
 
         // All at once first, so mise installs what a tool's backend needs before it, such as uv
         // for pypi tools. A bad entry doesn't stop the rest, and the loop below finds it.
         yield* mise(
           [
             'install',
-            ...options.tools.map((entry) => {
+            ...missing.map((entry) => {
               const tool = parseTool(entry);
 
               return `${tool.name}@${tool.version}`;
@@ -174,6 +212,11 @@ export const layer = Layer.effect(
       for (const entry of options.tools) {
         const tool = parseTool(entry);
 
+        if (!missing.includes(entry)) {
+          installed.push(tool);
+          continue;
+        }
+
         // Installed before it goes in the config, so an entry mise can't resolve never breaks it.
         yield* mise(['install', `${tool.name}@${tool.version}`], {}, true).pipe(
           Effect.andThen(Effect.sync(() => installed.push(tool))),
@@ -185,7 +228,7 @@ export const layer = Layer.effect(
         );
       }
 
-      if (options.tools.length > 0) {
+      if (missing.length > 0) {
         yield* Effect.logInfo(`Installed ${installed.length} of ${options.tools.length} tools`);
       }
 
@@ -206,9 +249,29 @@ export const layer = Layer.effect(
         .pipe(Effect.catch((error) => warn(`Couldn't write ${optionsFile}: ${error.message}`)));
     });
 
+    // A default tool you've taken off the list still has the image's copy, and its shim would make
+    // it look installed, so it's removed. The image's filesystem is reset on every start anyway.
+    const removeUnused = Effect.gen(function* () {
+      const present = yield* listInstalled;
+
+      for (const [name, installs] of Object.entries(present)) {
+        const fromImage = installs.some((install) =>
+          install.install_path.startsWith(`${systemData}/`)
+        );
+
+        if (!fromImage || installs.some((install) => install.active === true)) continue;
+
+        yield* mise(['uninstall', '--all', name]).pipe(
+          Effect.andThen(Effect.logInfo(`Removed ${name}, which isn't in the tools option`)),
+          Effect.catch((error) => Effect.logWarning(`Couldn't remove ${name}: ${error.message}`))
+        );
+      }
+    });
+
     const applyOptions = Effect.gen(function* () {
       yield* Ref.set(warningsRef, []);
       yield* installTools;
+      yield* removeUnused;
       yield* mise(['reshim']).pipe(Effect.ignore);
       // Versions no config uses any more, such as ones replaced by an upgrade. Nothing runs from them yet.
       yield* mise(['prune', '--yes']).pipe(Effect.ignore);

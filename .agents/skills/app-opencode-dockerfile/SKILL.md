@@ -23,6 +23,7 @@ There's no s6-overlay or bashio. The entrypoint is `/usr/local/bin/opencode-app`
 - Everything else comes from mise. `image/mise.toml` is copied to `/etc/mise/config.toml`, mise's system config, and installed with `mise install --system` into `/usr/local/share/mise`. Install Node.js and aube first, since npm tools install through them.
 - Built-in tools use `latest`, except OpenCode, which stays on major `2` because the entrypoint's client and the plugin are built against it. The app updates them at runtime into `$HOME`, so a release isn't needed for a new tool version.
 - When adding a built-in tool, also list it under **Preinstalled tools** in `opencode/DOCS.md`.
+- The `tools` option's defaults in `opencode/config.yaml` are installed into the image too, from `dist/default-tools.txt`, which `scripts/default-tools.ts` writes in the build stage. They're installed but not configured, so they're only active while the option lists them, and the app uninstalls any that are taken off it. uv's Python goes in `/usr/local/share/uv/python`, since the pypi tools' environments point at it.
 
 ## Pins
 

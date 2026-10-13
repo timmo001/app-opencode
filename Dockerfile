@@ -15,6 +15,8 @@ RUN bun install --frozen-lockfile
 
 COPY tsconfig.json ./
 COPY src src
+COPY scripts scripts
+COPY opencode/config.yaml opencode/config.yaml
 
 RUN bun run build
 
@@ -50,6 +52,15 @@ COPY image/inputrc /etc/opencode-app/inputrc
 # Node and aube first, since the npm tools install with them. Caches go with the layer.
 RUN HOME=/root mise install --system node aqua:aubepkg/aube \
     && HOME=/root mise install --system \
+    && rm -rf /root/.cache /root/.local
+
+# The tools option's default list, so a new install starts without downloading it. They're only
+# active while they're in the option; the app removes any you take off it. uv's Python goes in
+# the image too, since the pypi tools' environments point at it.
+COPY --from=build /src/dist/default-tools.txt /usr/local/share/opencode-app/default-tools.txt
+RUN HOME=/root UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python \
+        xargs mise install --system < /usr/local/share/opencode-app/default-tools.txt \
+    && HOME=/root mise reshim --system \
     && rm -rf /root/.cache /root/.local
 
 COPY --from=build /src/dist/opencode-app /usr/local/bin/opencode-app

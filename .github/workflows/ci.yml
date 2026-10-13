@@ -66,7 +66,7 @@ jobs:
       - name: Start the app
         run: |
           mkdir data config
-          echo '{"remote_access": false, "system_packages": ["tree"], "tools": ["fd"]}' > data/options.json
+          echo '{"remote_access": false, "system_packages": ["tree"], "tools": ["fd", "dust"]}' > data/options.json
           sudo chown -R root:root data config
           sudo chmod 600 data/options.json
           # Ingress only answers the Supervisor, which here is the Docker host.
@@ -102,7 +102,11 @@ jobs:
             sleep 2
           done
           docker exec app tree --version
+          # fd comes with the image, dust isn't a default so it's downloaded, and eza is a
+          # default taken off the list, so it's removed.
           docker exec app fd --version
+          docker exec app dust --version
+          if docker exec app eza --version; then exit 1; fi
           sudo test -f config/opencode.json
           sudo test -L data/home/.config/opencode/plugins/opencode-app.js
 
@@ -110,7 +114,7 @@ jobs:
         run: |
           docker restart app
           sleep 5
-          sudo test -n "$(sudo find data/home/.local/share/mise/installs -maxdepth 1 -name fd)"
+          sudo test -n "$(sudo find data/home/.local/share/mise/installs -maxdepth 1 -name dust)"
 
       - name: App logs
         if: always()

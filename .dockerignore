@@ -3,4 +3,6 @@
 !bun.lock
 !tsconfig.json
 !src/**
+!scripts/**
+!opencode/config.yaml
 !image/**

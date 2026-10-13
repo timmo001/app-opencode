@@ -5,9 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun run build:app && bun run build:plugin",
+    "build": "bun run build:app && bun run build:plugin && bun run build:tools",
     "build:app": "bun build src/main.ts --compile --minify --format=esm --keep-names --no-compile-autoload-dotenv --no-compile-autoload-bunfig --outfile dist/opencode-app",
     "build:plugin": "bun build src/plugin.ts --target bun --format esm --external effect --external 'effect/*' --external '@opencode/plugin' --external '@opencode/plugin/*' --outfile dist/plugin.js",
+    "build:tools": "bun scripts/default-tools.ts",
     "lint": "oxlint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",

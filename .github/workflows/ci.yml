@@ -70,8 +70,10 @@ jobs:
           sudo chown -R root:root data config
           sudo chmod 600 data/options.json
           # Ingress only answers the Supervisor, which here is the Docker host.
+          # The test container uses OpenCode's built-in model list, so CI makes no calls to OpenCode's servers.
           docker run -d --name app -v "$PWD/data:/data" -v "$PWD/config:/config" \
             -e OPENCODE_APP_INGRESS_FROM=172.17.0.1 \
+            -e OPENCODE_DISABLE_MODELS_FETCH=true \
             -p 8099:8099 -p 49374:49374 app-opencode:ci
 
       - name: Check OpenCode is running

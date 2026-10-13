@@ -23,15 +23,21 @@ export interface Result {
   readonly stderr: string;
 }
 
+export interface RunOptions extends ChildProcess.CommandOptions {
+  /** Logs each line of output as it comes, for long runs whose progress is worth seeing. */
+  readonly log?: boolean;
+}
+
 /**
  * Runs a command to completion with its arguments passed as they are, never
  * through a shell, and fails when it exits with anything but 0. Its output
- * isn't logged: callers log what happened, and a failure keeps the output.
+ * isn't logged unless `log` is set: callers log what happened, and a failure
+ * keeps the output.
  */
 export const run = Effect.fn('Command.run')(function* (
   command: string,
   args: ReadonlyArray<string>,
-  options: ChildProcess.CommandOptions = {}
+  { log = false, ...options }: RunOptions = {}
 ) {
   const name = [command, ...args.slice(0, 2)].join(' ');
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
@@ -41,13 +47,22 @@ export const run = Effect.fn('Command.run')(function* (
     .spawn(ChildProcess.make(command, args, options))
     .pipe(Effect.mapError(failed));
 
-  const [stdout, stderr] = yield* Effect.all(
-    [
-      handle.stdout.pipe(Stream.decodeText(), Stream.mkString),
-      handle.stderr.pipe(Stream.decodeText(), Stream.mkString),
-    ],
-    { concurrency: 'unbounded' }
-  ).pipe(Effect.mapError(failed));
+  const collect = <E>(output: Stream.Stream<Uint8Array, E>) =>
+    output.pipe(
+      Stream.decodeText(),
+      Stream.splitLines,
+      Stream.tap((line) =>
+        log && line.trim() !== ''
+          ? Effect.logInfo(line).pipe(Effect.annotateLogs('command', command))
+          : Effect.void
+      ),
+      Stream.map((line) => `${line}\n`),
+      Stream.mkString
+    );
+
+  const [stdout, stderr] = yield* Effect.all([collect(handle.stdout), collect(handle.stderr)], {
+    concurrency: 'unbounded',
+  }).pipe(Effect.mapError(failed));
 
   const exitCode = yield* handle.exitCode.pipe(Effect.mapError(failed));
 

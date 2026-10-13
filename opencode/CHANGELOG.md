@@ -1,1 +1,2 @@
 OpenCode now starts within seconds: system packages install in the background once it's up, so the watchdog no longer restarts the app while apt runs. Installs log each line of output as they go, so you can follow them in the app's log. A new `cors_origins` option lets other addresses reach OpenCode from a browser, such as an OpenTunnel address you already use, which the terminal needs when opened through one.
+

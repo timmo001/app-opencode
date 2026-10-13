@@ -1,4 +1,14 @@
-import { Cause, Inspectable, Logger, Match, PlatformError, Predicate, References } from 'effect';
+import {
+  Cause,
+  Console,
+  Effect,
+  Inspectable,
+  Logger,
+  Match,
+  PlatformError,
+  Predicate,
+  References,
+} from 'effect';
 
 const pad = (value: number, length = 2) => value.toString().padStart(length, '0');
 
@@ -64,5 +74,15 @@ const formatLine = Logger.make<unknown, string>(({ cause, date, fiber, logLevel,
 });
 
 export const layer = Logger.layer([Logger.withConsoleLog(formatLine)]);
+
+const rule = '-'.repeat(60);
+
+/** A block that stands out in the log, such as where a run starts and stops. */
+export const banner = (...lines: ReadonlyArray<string>) =>
+  Console.log(['', rule, ...lines.map((line) => ` ${line}`), rule].join('\n'));
+
+/** A step's first line, after a blank one, so each step reads as its own block. */
+export const step = (message: string) =>
+  Console.log('').pipe(Effect.andThen(Effect.logInfo(message)));
 
 export * as Log from './Log.js';

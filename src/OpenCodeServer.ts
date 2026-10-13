@@ -15,6 +15,7 @@ import {
 import { HttpClient, HttpClientRequest } from 'effect/http';
 import { ChildProcess, ChildProcessSpawner } from 'effect/process';
 import { Command } from './Command.js';
+import { Log } from './Log.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
 import { Tools } from './Tools.js';
@@ -134,9 +135,11 @@ export const layer = Layer.effect(
 
       yield* configure(server.path);
       yield* fs.remove(registration).pipe(Effect.ignore);
-      yield* Effect.logInfo(`Starting OpenCode ${server.version}`);
+      yield* Log.step(`Starting OpenCode ${server.version}`);
 
       const scope = yield* Scope.make();
+      // Added first, so it runs last, once the process has gone.
+      yield* Scope.addFinalizer(scope, Effect.logInfo('OpenCode stopped'));
 
       const handle = yield* spawner
         .spawn(

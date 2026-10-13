@@ -16,6 +16,7 @@ const startup = Layer.effectDiscard(
   Effect.gen(function* () {
     const tools = yield* Tools.Service;
 
+    yield* Log.banner('OpenCode app', 'Starting');
     yield* Home.prepare();
     yield* tools.applyOptions;
     yield* tools.upgrade.pipe(
@@ -42,7 +43,11 @@ const app = Layer.mergeAll(Control.layer, Ingress.layer).pipe(
 BunRuntime.runMain(
   Layer.launch(app).pipe(
     Effect.tapCause((cause) =>
-      Cause.hasInterruptsOnly(cause) ? Effect.void : Effect.logError('The app stopped:', cause)
+      Cause.hasInterruptsOnly(cause)
+        ? Log.banner('OpenCode app', 'Stopped')
+        : Effect.logError('The app stopped:', cause).pipe(
+            Effect.andThen(Log.banner('OpenCode app', 'Stopped with an error'))
+          )
     ),
     Effect.provide(Log.layer)
   ),

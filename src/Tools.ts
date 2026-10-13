@@ -1,6 +1,7 @@
 import { Config, Context, Effect, FileSystem, Layer, Ref, Schema, Semaphore } from 'effect';
 import { ChildProcessSpawner } from 'effect/process';
 import { Command } from './Command.js';
+import { Log } from './Log.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
 
@@ -120,14 +121,17 @@ export const layer = Layer.effect(
     const installPackages = Effect.gen(function* () {
       if (options.system_packages.length === 0) return;
 
-      yield* Effect.logInfo(`Installing system packages: ${options.system_packages.join(', ')}`);
+      yield* Log.step(`Installing system packages: ${options.system_packages.join(', ')}`);
       yield* apt(['update']).pipe(
         Effect.catch((error) => warn(`Couldn't update the package lists: ${error.message}`))
       );
 
+      let installed = 0;
+
       // One at a time, so a package that doesn't exist only skips itself.
       for (const name of options.system_packages) {
         yield* apt(['install', '-y', '--no-install-recommends', name]).pipe(
+          Effect.andThen(Effect.sync(() => installed++)),
           Effect.catch((error) =>
             warn(
               `System package "${name}" couldn't be installed. Check the name on packages.debian.org. ${error.message}`
@@ -135,13 +139,17 @@ export const layer = Layer.effect(
           )
         );
       }
+
+      yield* Effect.logInfo(
+        `Installed ${installed} of ${options.system_packages.length} system packages`
+      );
     });
 
     const installTools = Effect.gen(function* () {
       const installed: Array<{ readonly name: string; readonly version: string }> = [];
 
       if (options.tools.length > 0) {
-        yield* Effect.logInfo(`Installing tools: ${options.tools.join(', ')}`);
+        yield* Log.step(`Installing tools: ${options.tools.join(', ')}`);
 
         // All at once first, so mise installs what a tool's backend needs before it, such as uv
         // for pypi tools. A bad entry doesn't stop the rest, and the loop below finds it.
@@ -167,6 +175,10 @@ export const layer = Layer.effect(
             )
           )
         );
+      }
+
+      if (options.tools.length > 0) {
+        yield* Effect.logInfo(`Installed ${installed.length} of ${options.tools.length} tools`);
       }
 
       // Rewritten on every start, so removing a tool from the option removes it here.
@@ -196,6 +208,7 @@ export const layer = Layer.effect(
     }).pipe(Effect.withSpan('Tools.applyOptions'));
 
     const upgrade = Effect.gen(function* () {
+      yield* Log.step('Checking for tool updates');
       const before = yield* serverOpenCode;
 
       // `mise upgrade` would reinstall into the image's folder, which is lost on restart, so each newer

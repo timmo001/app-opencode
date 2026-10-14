@@ -4,10 +4,21 @@ import { Effect, Result, Schema } from 'effect';
 /**
  * Adds `/app-update`, which asks the app to update OpenCode and the built-in tools, reports what
  * changed in the session, then has the app restart OpenCode when it changed. `/app-feedback` has
- * the agent draft an issue for the app and open it once you confirm.
+ * the agent draft an issue for the app and open it once you confirm. Every session also gets a
+ * short note on the app's environment, which points to the `opencode-app` skill for the rest.
  *
  * Bundled with `effect` and `@opencode/plugin` left external, so it uses OpenCode's own copies.
  */
+
+const environment = [
+  '# The OpenCode Home Assistant app',
+  '',
+  "You're running in the OpenCode app for Home Assistant, a Debian container that's reset on every start.",
+  '',
+  "- Only `/data/home` (`$HOME`, where projects go), `/homeassistant` (Home Assistant's configuration), `/share` and `/config` (the app's config folder, with the user's `opencode.json`, `AGENTS.md`, `skills` and `mise.toml`) are kept.",
+  "- Load the `opencode-app` skill before installing tools or system packages, changing the app's or OpenCode's config, or when an update or restart comes up.",
+  '- Never update or restart OpenCode or the app yourself: ask the user.',
+].join('\n');
 
 const UpdateResult = Schema.Struct({
   updated: Schema.Array(
@@ -105,6 +116,10 @@ const feedback = (notes: string) =>
 export default Plugin.define({
   id: 'opencode-app',
   effect: Effect.fn(function* (ctx) {
+    yield* ctx.session.hook('context', (event) =>
+      Effect.sync(() => event.system.push({ type: 'text', text: environment }))
+    );
+
     yield* ctx.command.transform((editor) => {
       editor.add({
         name: 'app-update',

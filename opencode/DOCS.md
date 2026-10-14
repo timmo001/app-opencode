@@ -90,6 +90,12 @@ OpenCode stays on version 2. A new major version comes with an app update.
 
 The app's config folder is linked into place on every start, so you can edit it with the File editor or Samba apps. Files that are missing are created again with a starting point.
 
+## What the agent knows about the app
+
+The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Both come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
+
+Your own `AGENTS.md` in the app's config folder is for your instructions, on top of these.
+
 ## Tool layers
 
 mise reads its config in layers, so the app's tools and yours are kept apart:

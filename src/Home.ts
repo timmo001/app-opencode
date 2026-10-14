@@ -1,14 +1,10 @@
 import { Effect, FileSystem } from 'effect';
 import { Paths } from './Paths.js';
 
-const agentsFile = `# OpenCode in Home Assistant
+const agentsFile = `# Your instructions
 
-You are running in the OpenCode app for Home Assistant, in a Debian container.
-
-- Home Assistant's configuration is at \`/homeassistant\`, and its shared folder at \`/share\`.
-- Your home folder is \`$HOME\` (\`/data/home\`). It's kept across restarts and in the app's backups, so keep projects there.
-- Developer tools come from mise. Add one for yourself with \`mise use -g <tool>\`, or for a project in its own \`mise.toml\`.
-- This file and the rest of the app's OpenCode config are in the app's config folder, which the user can edit.
+Add your own instructions for the agent here. The app adds its own, about the container and
+where things live, to every session, so you don't need to repeat them.
 `;
 
 const openCodeConfig = `{

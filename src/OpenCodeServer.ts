@@ -23,6 +23,20 @@ import { Tools } from './Tools.js';
 /** The port OpenCode's service listens on, which `opencode/config.yaml` maps to the host. */
 export const port = 49374;
 
+// OpenCode fills in the token when it loads the config, so it's never written to disk.
+const homeAssistantMcp = JSON.stringify({
+  mcp: {
+    servers: {
+      'home-assistant': {
+        type: 'remote',
+        url: 'http://supervisor/core/api/mcp',
+        oauth: false,
+        headers: { Authorization: 'Bearer {env:SUPERVISOR_TOKEN}' },
+      },
+    },
+  },
+});
+
 export interface PairCode {
   readonly code: string;
   readonly expiresIn: number;
@@ -153,12 +167,20 @@ export const layer = Layer.effect(
       // Added first, so it runs last, once the process has gone.
       yield* Scope.addFinalizer(scope, Effect.logInfo('OpenCode stopped'));
 
+      const env =
+        options.home_assistant_mcp === false
+          ? { OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket }
+          : {
+              OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket,
+              OPENCODE_CONFIG_CONTENT: homeAssistantMcp,
+            };
+
       const handle = yield* spawner
         .spawn(
           ChildProcess.make(server.path, ['serve', '--service'], {
             cwd: paths.home,
             extendEnv: true,
-            env: { OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket },
+            env,
             stdout: 'inherit',
             stderr: 'inherit',
           })

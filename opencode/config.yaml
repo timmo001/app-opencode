@@ -19,6 +19,8 @@ ports:
 ports_description:
   49374/tcp: OpenCode on your network (web UI and API)
 watchdog: tcp://[HOST]:[PORT:49374]
+# Reaches Home Assistant's MCP server through the Supervisor.
+homeassistant_api: true
 map:
   - type: addon_config
     read_only: false
@@ -33,6 +35,7 @@ backup_exclude:
 options:
   remote_access: false
   cors_origins: []
+  home_assistant_mcp: true
   system_packages:
     - build-essential
     - dnsutils
@@ -70,6 +73,7 @@ schema:
   remote_access: bool
   cors_origins:
     - match(^https?://[^/\s]+$)
+  home_assistant_mcp: bool
   system_packages:
     - match(^[a-z0-9][a-z0-9+.-]+$)
   tools:

@@ -18,6 +18,12 @@ configuration:
       Other web addresses allowed to call OpenCode from a browser, such as an OpenTunnel address
       you already use (https://1a2b3c4d5e6f7a8b.abcd1234efgh.opentunnel.xyz) or your own proxy.
       Origins only, with no path or trailing slash.
+  home_assistant_mcp:
+    name: Home Assistant MCP server
+    description: >-
+      Connect OpenCode to Home Assistant's MCP server, so the agent can read states and call
+      actions. Needs Home Assistant's Model Context Protocol integration, which you add in Home
+      Assistant.
   system_packages:
     name: System packages
     description: >-

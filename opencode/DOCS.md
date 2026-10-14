@@ -29,6 +29,14 @@ Reaches OpenCode from anywhere through [OpenTunnel](https://github.com/anomalyco
 
 Other web addresses allowed to call OpenCode from a browser, such as an OpenTunnel address you already use, `https://1a2b3c4d5e6f7a8b.abcd1234efgh.opentunnel.xyz`, or a reverse proxy of your own. Without it, an address OpenCode doesn't know can stop parts of the web app working, such as the terminal. Give origins only: the scheme and host, with a port if it isn't the default, and no path or trailing slash. Leave it empty to only allow OpenCode's own addresses. Origins set by hand with `opencode service set cors` are kept while this is empty.
 
+### `home_assistant_mcp`
+
+Connects OpenCode to Home Assistant's own [MCP server](https://www.home-assistant.io/integrations/mcp_server/), so the agent can read states and call actions as well as edit your configuration. It's on by default and shows in OpenCode as `home-assistant`.
+
+It needs Home Assistant's **Model Context Protocol** integration (not **Model Context Protocol Client**): add it in **Settings** > **Devices & services**. Until you do, OpenCode shows the server as failed. The integration's options choose which tools the agent gets, and can make them read-only.
+
+The app talks to Home Assistant through the Supervisor, with the app's own token, which OpenCode reads from the environment so it's never written to disk. That token can use Home Assistant's whole API as an admin, and anything the agent runs in the app can read it.
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.

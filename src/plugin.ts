@@ -17,7 +17,7 @@ const environment = [
   '',
   "- Only `/data/home` (`$HOME`, where projects go), `/homeassistant` (Home Assistant's configuration), `/share` and `/config` (the app's config folder, with the user's `opencode.json`, `AGENTS.md`, `skills` and `mise.toml`) are kept.",
   "- Load the `opencode-app` skill before installing tools or system packages, changing the app's or OpenCode's config, or when an update or restart comes up.",
-  "- Load `opencode-app-home-assistant` before using Home Assistant's MCP servers or API.",
+  "- Load `opencode-app-home-assistant` before using Home Assistant's MCP servers or API, and `opencode-app-music-assistant` before using Music Assistant.",
   '- Never update or restart OpenCode or the app yourself: ask the user.',
 ].join('\n');
 

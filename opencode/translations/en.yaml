@@ -24,6 +24,12 @@ configuration:
       Connect OpenCode to Home Assistant's MCP server, so the agent can read states and call
       actions, along with the MCP servers Home Assistant connects to, such as other apps'. Needs
       Home Assistant's Model Context Protocol integration, which you add in Home Assistant.
+  music_assistant_token:
+    name: Music Assistant token
+    description: >-
+      Optional. A long-lived token from Music Assistant's app, so the agent can use its API, and
+      its MCP server when that plugin is on. Create a long-lived access token in Music Assistant
+      under Settings > Profile. See the Documentation tab for how to set it up.
   system_packages:
     name: System packages
     description: >-

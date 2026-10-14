@@ -41,6 +41,27 @@ The app talks to Home Assistant through the Supervisor, with the app's own token
 
 Apps such as [Triage](https://github.com/timmo001/triage) can offer their own MCP server to Home Assistant. Once you've added it with Home Assistant's [Model Context Protocol Client](https://www.home-assistant.io/integrations/mcp/) integration, the app connects OpenCode to it too, through Home Assistant, named after the integration entry (for example `triage`). The list is read each time OpenCode starts, so after adding one, restart the app. This needs Home Assistant 2026.9 or newer.
 
+### `music_assistant_token`
+
+Optional. Connects the agent to [Music Assistant](https://www.music-assistant.io)'s app, so it can browse your library and control playback. Music Assistant has to be running as an app on the same Home Assistant.
+
+To set it up:
+
+1. In Music Assistant, open **Settings** > **Profile** and create a token under **Long-lived access tokens**. See [Music Assistant's profile settings](https://www.music-assistant.io/settings/profile/). These tokens last a year, so make a new one when it runs out.
+2. Paste it into this option and restart the app.
+
+The agent uses [Music Assistant's API](https://www.music-assistant.io/api/) from the shell, with the address and token in `MUSIC_ASSISTANT_URL` and `MUSIC_ASSISTANT_TOKEN`.
+
+#### Music Assistant's MCP server
+
+Music Assistant can also run an MCP server, which gives the agent tools for your library, players and queues. To use it:
+
+1. In Music Assistant, open **Settings** > **Plugins** > **Add a plugin** and add **FastMCP Server**. See [the plugin's documentation](https://www.music-assistant.io/plugins/fastmcp-server/).
+2. In the plugin's permissions, allow what the agent may do. Only read-only library access is on by default, so turn on playback and queue control if you want those.
+3. Restart this app. It checks for the plugin on every start and connects OpenCode to it as `music-assistant`, with the same token. You don't need the plugin's Connect Wizard.
+
+The plugin is still experimental in Music Assistant. Without it, the agent uses the API.
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
@@ -96,7 +117,7 @@ The app's config folder is linked into place on every start, so you can edit it 
 
 ## What the agent knows about the app
 
-The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. One more covers the connection: `opencode-app-home-assistant` for Home Assistant's API and MCP servers. They all come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
+The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Two more cover the connections: `opencode-app-home-assistant` for Home Assistant's API and MCP servers, and `opencode-app-music-assistant` for Music Assistant. They all come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
 
 Your own `AGENTS.md` in the app's config folder is for your instructions, on top of these.
 

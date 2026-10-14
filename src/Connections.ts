@@ -1,6 +1,13 @@
 import { Config, Context, Effect, Layer, Option, Schema } from 'effect';
+import { HttpClient } from 'effect/http';
 import { Socket } from 'effect/socket';
 import { Options } from './Options.js';
+
+/** Music Assistant's app runs on the host network, which apps reach through the Supervisor's gateway. */
+export const musicAssistantUrl = 'http://172.30.32.1:8095';
+
+/** Where Music Assistant's MCP server plugin is served by default. */
+const musicAssistantMcpPath = '/mcp/v1';
 
 export interface Resolved {
   /** OpenCode config to pass in `OPENCODE_CONFIG_CONTENT`, when there's anything to connect. */
@@ -122,6 +129,7 @@ const llmApis = Effect.fn('Connections.llmApis')(
 export const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
+    const http = yield* HttpClient.HttpClient;
     const options = yield* Options.Service;
     const supervisorToken = yield* Config.String('SUPERVISOR_TOKEN').pipe(Config.option);
 
@@ -157,9 +165,39 @@ export const layer = Layer.effect(
       return servers;
     });
 
+    // The plugin answers anything but a 404 at its path, so a 404 means it's off.
+    const musicAssistantMcp = (token: string) =>
+      http
+        .get(`${musicAssistantUrl}${musicAssistantMcpPath}`, {
+          headers: { authorization: `Bearer ${token}` },
+        })
+        .pipe(
+          Effect.map((response) => response.status !== 404),
+          Effect.timeout('10 seconds'),
+          Effect.catch((error) =>
+            Effect.logWarning(`Couldn't reach Music Assistant: ${error.message}`).pipe(
+              Effect.as(false)
+            )
+          )
+        );
+
     const resolve = Effect.gen(function* () {
       const servers: Servers = options.home_assistant_mcp === false ? {} : yield* homeAssistant;
       const env: Record<string, string> = {};
+
+      const musicAssistantToken = options.music_assistant_token ?? '';
+
+      if (musicAssistantToken !== '') {
+        env['MUSIC_ASSISTANT_URL'] = musicAssistantUrl;
+        env['MUSIC_ASSISTANT_TOKEN'] = musicAssistantToken;
+
+        if (yield* musicAssistantMcp(musicAssistantToken)) {
+          servers['music-assistant'] = remote(
+            `${musicAssistantUrl}${musicAssistantMcpPath}`,
+            'MUSIC_ASSISTANT_TOKEN'
+          );
+        }
+      }
 
       const names = Object.keys(servers);
 

@@ -7,6 +7,7 @@ const Options = Schema.Struct({
   remote_access: Schema.Boolean,
   cors_origins: Schema.optional(Schema.Array(Schema.String)),
   home_assistant_mcp: Schema.optional(Schema.Boolean),
+  music_assistant_token: Schema.optional(Schema.String),
   system_packages: Schema.Array(Schema.String),
   tools: Schema.Array(Schema.String),
 });

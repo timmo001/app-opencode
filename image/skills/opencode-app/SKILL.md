@@ -1,6 +1,6 @@
 ---
 name: opencode-app
-description: How the OpenCode Home Assistant app's container works - where files live and what survives a restart, the mise tool layers, adding tools and system packages, and updating or restarting OpenCode and the app. Load before installing a tool or package, changing the app's or OpenCode's config, or when an update or restart comes up. For Home Assistant, load opencode-app-home-assistant.
+description: How the OpenCode Home Assistant app's container works - where files live and what survives a restart, the mise tool layers, adding tools and system packages, and updating or restarting OpenCode and the app. Load before installing a tool or package, changing the app's or OpenCode's config, or when an update or restart comes up. For Home Assistant or Music Assistant, load opencode-app-home-assistant or opencode-app-music-assistant.
 ---
 
 # The OpenCode Home Assistant app
@@ -47,9 +47,10 @@ Developer tools come from [mise](https://mise.jdx.dev), in layers, each overridi
 
 ## Home Assistant and other apps
 
-Connecting to Home Assistant has its own skill. Load it before using that connection:
+Connecting to Home Assistant, and to apps such as Music Assistant, has its own skills. Load them before using those connections:
 
 - `opencode-app-home-assistant`: Home Assistant's MCP servers, including those of other apps and services connected through Home Assistant's **Model Context Protocol Client** integration, and its REST and WebSocket APIs.
+- `opencode-app-music-assistant`: Music Assistant's MCP server and API.
 
 `SUPERVISOR_TOKEN` in the environment is an admin token for Home Assistant's API. Never print it, log it or write it to a file.
 

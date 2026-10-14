@@ -74,6 +74,7 @@ schema:
   cors_origins:
     - match(^https?://[^/\s]+$)
   home_assistant_mcp: bool
+  music_assistant_token: password?
   system_packages:
     - match(^[a-z0-9][a-z0-9+.-]+$)
   tools:

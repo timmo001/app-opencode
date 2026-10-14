@@ -37,6 +37,10 @@ It needs Home Assistant's **Model Context Protocol** integration (not **Model Co
 
 The app talks to Home Assistant through the Supervisor, with the app's own token, which OpenCode reads from the environment so it's never written to disk. That token can use Home Assistant's whole API as an admin, and anything the agent runs in the app can read it.
 
+#### Other apps' MCP servers
+
+Apps such as [Triage](https://github.com/timmo001/triage) can offer their own MCP server to Home Assistant. Once you've added it with Home Assistant's [Model Context Protocol Client](https://www.home-assistant.io/integrations/mcp/) integration, the app connects OpenCode to it too, through Home Assistant, named after the integration entry (for example `triage`). The list is read each time OpenCode starts, so after adding one, restart the app. This needs Home Assistant 2026.9 or newer.
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
@@ -92,7 +96,7 @@ The app's config folder is linked into place on every start, so you can edit it 
 
 ## What the agent knows about the app
 
-The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Both come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
+The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. One more covers the connection: `opencode-app-home-assistant` for Home Assistant's API and MCP servers. They all come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
 
 Your own `AGENTS.md` in the app's config folder is for your instructions, on top of these.
 

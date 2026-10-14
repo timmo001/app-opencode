@@ -22,8 +22,8 @@ configuration:
     name: Home Assistant MCP server
     description: >-
       Connect OpenCode to Home Assistant's MCP server, so the agent can read states and call
-      actions. Needs Home Assistant's Model Context Protocol integration, which you add in Home
-      Assistant.
+      actions, along with the MCP servers Home Assistant connects to, such as other apps'. Needs
+      Home Assistant's Model Context Protocol integration, which you add in Home Assistant.
   system_packages:
     name: System packages
     description: >-

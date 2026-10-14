@@ -1,6 +1,7 @@
 import { BunRuntime, BunServices } from '@effect/platform-bun';
 import { Cause, Effect, Layer } from 'effect';
 import { FetchHttpClient } from 'effect/http';
+import { Connections } from './Connections.js';
 import { Control } from './Control.js';
 import { Git } from './Git.js';
 import { Home } from './Home.js';
@@ -43,6 +44,7 @@ const packages = Layer.effectDiscard(
 const app = Layer.mergeAll(Control.layer, Ingress.layer, packages).pipe(
   Layer.provideMerge(Updates.layer),
   Layer.provideMerge(OpenCodeServer.layer),
+  Layer.provideMerge(Connections.layer),
   Layer.provideMerge(startup),
   Layer.provideMerge(Tools.layer),
   Layer.provideMerge(Options.layer),

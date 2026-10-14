@@ -15,6 +15,7 @@ import {
 import { HttpClient, HttpClientRequest } from 'effect/http';
 import { ChildProcess, ChildProcessSpawner } from 'effect/process';
 import { Command } from './Command.js';
+import { Connections } from './Connections.js';
 import { Log } from './Log.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
@@ -22,20 +23,6 @@ import { Tools } from './Tools.js';
 
 /** The port OpenCode's service listens on, which `opencode/config.yaml` maps to the host. */
 export const port = 49374;
-
-// OpenCode fills in the token when it loads the config, so it's never written to disk.
-const homeAssistantMcp = JSON.stringify({
-  mcp: {
-    servers: {
-      'home-assistant': {
-        type: 'remote',
-        url: 'http://supervisor/core/api/mcp',
-        oauth: false,
-        headers: { Authorization: 'Bearer {env:SUPERVISOR_TOKEN}' },
-      },
-    },
-  },
-});
 
 export interface PairCode {
   readonly code: string;
@@ -90,6 +77,7 @@ export const layer = Layer.effect(
     const paths = yield* Paths.Service;
     const options = yield* Options.Service;
     const tools = yield* Tools.Service;
+    const connections = yield* Connections.Service;
     const crashed = yield* Queue.unbounded<void>();
     const registration = `${paths.home}/.local/state/opencode/service.json`;
     const passwordMarker = `${paths.data}/server-password-set`;
@@ -167,12 +155,16 @@ export const layer = Layer.effect(
       // Added first, so it runs last, once the process has gone.
       yield* Scope.addFinalizer(scope, Effect.logInfo('OpenCode stopped'));
 
+      // Worked out on every start, so a restart picks up servers added to Home Assistant since.
+      const connected = yield* connections.resolve;
+
       const env =
-        options.home_assistant_mcp === false
-          ? { OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket }
+        connected.config === undefined
+          ? { ...connected.env, OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket }
           : {
+              ...connected.env,
               OPENCODE_APP_CONTROL_SOCKET: paths.controlSocket,
-              OPENCODE_CONFIG_CONTENT: homeAssistantMcp,
+              OPENCODE_CONFIG_CONTENT: connected.config,
             };
 
       const handle = yield* spawner

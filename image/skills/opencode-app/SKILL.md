@@ -1,6 +1,6 @@
 ---
 name: opencode-app
-description: How the OpenCode Home Assistant app's container works - where files live and what survives a restart, the mise tool layers, adding tools and system packages, Home Assistant's MCP server, and updating or restarting OpenCode and the app. Load before installing a tool or package, changing the app's or OpenCode's config, or when an update or restart comes up.
+description: How the OpenCode Home Assistant app's container works - where files live and what survives a restart, the mise tool layers, adding tools and system packages, and updating or restarting OpenCode and the app. Load before installing a tool or package, changing the app's or OpenCode's config, or when an update or restart comes up. For Home Assistant, load opencode-app-home-assistant.
 ---
 
 # The OpenCode Home Assistant app
@@ -45,9 +45,11 @@ Developer tools come from [mise](https://mise.jdx.dev), in layers, each overridi
 
 `apt-get install` works, as root, but the package is gone after a restart. For a package that should stay, suggest the user adds it to the `system_packages` app option; the app installs those in the background after each start, so check the app's log if one seems missing. Prefer a mise tool when one exists, since it's kept without reinstalling.
 
-## Home Assistant
+## Home Assistant and other apps
 
-With the `home_assistant_mcp` option on (the default), OpenCode has an MCP server called `home-assistant` for reading states and calling actions. It needs Home Assistant's **Model Context Protocol** integration; if the server shows as failed, ask the user to add it in **Settings** > **Devices & services**.
+Connecting to Home Assistant has its own skill. Load it before using that connection:
+
+- `opencode-app-home-assistant`: Home Assistant's MCP servers, including those of other apps and services connected through Home Assistant's **Model Context Protocol Client** integration, and its REST and WebSocket APIs.
 
 `SUPERVISOR_TOKEN` in the environment is an admin token for Home Assistant's API. Never print it, log it or write it to a file.
 

@@ -5,7 +5,7 @@ import { Effect, Result, Schema } from 'effect';
  * Adds `/app-update`, which asks the app to update OpenCode and the built-in tools, reports what
  * changed in the session, then has the app restart OpenCode when it changed. `/app-feedback` has
  * the agent draft an issue for the app and open it once you confirm. Every session also gets a
- * short note on the app's environment, which points to the `opencode-app` skill for the rest.
+ * short note on the app's environment, which points to the app's skills for the rest.
  *
  * Bundled with `effect` and `@opencode/plugin` left external, so it uses OpenCode's own copies.
  */
@@ -17,6 +17,7 @@ const environment = [
   '',
   "- Only `/data/home` (`$HOME`, where projects go), `/homeassistant` (Home Assistant's configuration), `/share` and `/config` (the app's config folder, with the user's `opencode.json`, `AGENTS.md`, `skills` and `mise.toml`) are kept.",
   "- Load the `opencode-app` skill before installing tools or system packages, changing the app's or OpenCode's config, or when an update or restart comes up.",
+  "- Load `opencode-app-home-assistant` before using Home Assistant's MCP servers or API.",
   '- Never update or restart OpenCode or the app yourself: ask the user.',
 ].join('\n');
 

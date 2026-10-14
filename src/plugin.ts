@@ -3,7 +3,8 @@ import { Effect, Result, Schema } from 'effect';
 
 /**
  * Adds `/app-update`, which asks the app to update OpenCode and the built-in tools, reports what
- * changed in the session, then has the app restart OpenCode when it changed.
+ * changed in the session, then has the app restart OpenCode when it changed. `/app-feedback` has
+ * the agent draft an issue for the app and open it once you confirm.
  *
  * Bundled with `effect` and `@opencode/plugin` left external, so it uses OpenCode's own copies.
  */
@@ -89,6 +90,18 @@ const update = Effect.gen(function* () {
   return yield* Schema.decodeUnknownEffect(UpdateResult)(response.body);
 });
 
+const feedback = (notes: string) =>
+  [
+    'Report a problem or idea for the OpenCode Home Assistant app as an issue on timmo001/app-opencode.',
+    ...(notes.trim() === '' ? [] : ['', `The user says: ${notes.trim()}`]),
+    '',
+    '1. Work out what to report from the user and this session: what was tried, what happened, any error and any workaround found. Ask the user if it is unclear.',
+    '2. Collect the details that help: `opencode --version`, `uname -m`, and any relevant config or command output. Leave out tokens, passwords and other secrets. Ask the user for the app version if it matters; it is on the app page in Home Assistant.',
+    "3. Search the repo's open and closed issues with `gh issue list --repo timmo001/app-opencode --state all --search`. If one covers it, show it and offer to add a comment instead.",
+    '4. Show the user the title and body, and change them until they are happy.',
+    '5. Once they confirm, open it with `gh issue create --repo timmo001/app-opencode` and share the link. If `gh` is not signed in, give them a link to https://github.com/timmo001/app-opencode/issues/new with the title and body filled in instead.',
+  ].join('\n');
+
 export default Plugin.define({
   id: 'opencode-app',
   effect: Effect.fn(function* (ctx) {
@@ -109,6 +122,17 @@ export default Plugin.define({
 
           if (Result.isSuccess(result) && result.success.restartNeeded) yield* control('/restart');
         }),
+      });
+
+      editor.add({
+        name: 'app-feedback',
+        description: 'Report a problem or idea for the Home Assistant app on GitHub',
+        execute: (input) =>
+          ctx.session.synthetic({
+            sessionID: input.sessionID,
+            description: 'App feedback',
+            text: feedback(input.prompt.text),
+          }),
       });
     });
   }),

@@ -107,6 +107,10 @@ Git comes set up with some defaults: new repositories start on `main`, commit me
 
 lazygit adds two keys in the branches panel: `Ctrl+B` cleans up merged branches with [gh-poi](https://github.com/seachicken/gh-poi), which it installs the first time, and `Ctrl+F` fetches and rebases onto the default branch, from `upstream` when there is one. Your own `/data/home/.config/lazygit/config.yml` replaces these.
 
+## Reporting a problem
+
+Run `/app-feedback` in OpenCode, with a few words on what went wrong or what you'd like. The agent gathers the details, checks for an existing issue and shows you a draft. It only opens the issue on GitHub once you say so.
+
 ## Documentation
 
 See [OpenCode's documentation](https://opencode.ai/docs).

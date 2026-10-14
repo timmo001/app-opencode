@@ -39,6 +39,11 @@ run = "bun run format"
 description = "Lint the YAML with yamllint"
 run = "yamllint ."
 
+[tasks."lint:apps"]
+description = "Check the manager app's config.yaml matches the app's"
+depends = ["install"]
+run = "bun scripts/check-apps.ts"
+
 [tasks.check]
 description = "Lint, type check and check formatting"
-depends = ["lint", "typecheck", "format:check", "lint:yaml"]
+depends = ["lint", "typecheck", "format:check", "lint:yaml", "lint:apps"]

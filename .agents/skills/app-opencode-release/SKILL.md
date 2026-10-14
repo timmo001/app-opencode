@@ -12,12 +12,13 @@ The app is image-only: `opencode/config.yaml` sets `image`, so the Supervisor pu
 ## Versions
 
 - The app's `version` in `opencode/config.yaml` is the release version, with no `v` prefix. The release workflow fails when it doesn't match the tag.
+- `opencode_manager/config.yaml` is the same app with the Supervisor's manager role, on the same image. Its `version` moves with the app's: `mise run check` fails when they differ, or when anything but the keys `scripts/check-apps.ts` allows differs. Its docs, changelog, translations and icons are links to `opencode/`.
 - OpenCode and the built-in tools in `image/mise.toml` update themselves at runtime, so a new OpenCode 2.x doesn't need a release. OpenCode stays on major `2`; moving to a new major needs `@opencode/client` and `@opencode/plugin` in `package.json` built for it, the `opencode` reference in `opencode.json` moved with them, and the entrypoint and plugin checked against the new source (see `app-opencode-review`).
 - Base images and build tools are pinned by digest in the `Dockerfile`, and Renovate bumps them.
 
 ## Release
 
-1. Bump `version` in `opencode/config.yaml` and commit it with the changes it releases.
+1. Bump `version` in `opencode/config.yaml` and `opencode_manager/config.yaml` and commit it with the changes it releases.
 2. Publish a GitHub release whose tag is that version. `.github/workflows/release.yml` checks the version, builds the image for both architectures with the shared `build-container-image.yml`, pushes it to GHCR tagged with the version, major.minor and `latest`, then commits the release notes to `opencode/CHANGELOG.md` with the shared `home-assistant-app-changelog.yml`, which Home Assistant shows in the update dialog.
 3. Check the workflow finished and the image's manifest lists both platforms (`docker buildx imagetools inspect ghcr.io/timmo001/app-opencode:<version>`).
 

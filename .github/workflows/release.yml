@@ -27,18 +27,21 @@ jobs:
         with:
           persist-credentials: false
 
-      # The Supervisor pulls the image tag that matches config.yaml, so they must agree.
+      # The Supervisor pulls the image tag that matches config.yaml, so they must agree. Both apps
+      # use the same image.
       - name: Check the tag matches the app version
         id: version
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
           version="${TAG#v}"
-          app_version="$(yq -r '.version' opencode/config.yaml)"
-          if [ "$version" != "$app_version" ]; then
-            echo "::error title=Version mismatch::opencode/config.yaml has $app_version, the tag is $TAG."
-            exit 1
-          fi
+          for config in opencode/config.yaml opencode_manager/config.yaml; do
+            app_version="$(yq -r '.version' "$config")"
+            if [ "$version" != "$app_version" ]; then
+              echo "::error title=Version mismatch::$config has $app_version, the tag is $TAG."
+              exit 1
+            fi
+          done
           printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
 
   image:

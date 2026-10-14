@@ -2,6 +2,17 @@
 
 An AI coding agent for your Home Assistant setup, powered by [OpenCode](https://opencode.ai). The app runs OpenCode 2's server, keeps it and its tools up to date, and opens it from the Home Assistant sidebar.
 
+## The two apps
+
+The repository has two versions of the app, which differ only in how much of the Supervisor the agent can use:
+
+| App                           | Supervisor access                                                                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **OpenCode**                  | Home Assistant's own Supervisor endpoints: Core's logs, including past boots, and restarting or updating Core                                                 |
+| **OpenCode (manager access)** | The Supervisor's manager role: every log (the Supervisor, the host, plugins and apps), and starting, stopping and configuring your apps, the host and backups |
+
+Both can use all of Home Assistant's own API. Anything the agent runs in the app can use the app's access, so pick **OpenCode** unless you want the agent to read the other logs or manage your system. The manager role also lowers the app's security rating in Home Assistant. Each is its own install, with its own sessions, home folder and config folder. You can run both, and the manager app uses port 49375 on your network rather than 49374.
+
 ## Opening OpenCode
 
 Open **OpenCode** in the sidebar. The page there shows which OpenCode is running and signs you in with a link that works once, in a new tab. You don't need a password:
@@ -62,6 +73,12 @@ Music Assistant can also run an MCP server, which gives the agent tools for your
 
 The plugin is still experimental in Music Assistant. Without it, the agent uses the API.
 
+### `ha_bridge`
+
+Runs [ha-bridge](https://ha-bridge.timmo.dev), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each ha-bridge version, so they always match it.
+
+Which logs it can read depends on which of the two apps you run. See [The two apps](#the-two-apps).
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
@@ -81,6 +98,7 @@ These come with the app and are always there, whatever the `tools` option says:
 - OpenCode 2
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
 - The GitHub CLI (`gh`), `jq`, ripgrep (`rg`) and Neovim (`nvim`), which Git and other tools open for editing
+- [ha-bridge](https://ha-bridge.timmo.dev), which the app runs while the `ha_bridge` option is on
 - From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
 
 ## The terminal
@@ -100,7 +118,7 @@ There are short Git aliases too, such as `g` for `git`. To change the prompt, ad
 OpenCode and the tools update themselves, without waiting for an app release:
 
 - When the app starts, and every 12 hours. An OpenCode update found on the 12-hour check runs from the next restart, so OpenCode isn't restarted under you.
-- On demand with **Update and restart** on the sidebar page, or `/app-update` in OpenCode. These restart OpenCode straight away when it changed, which stops anything running in any session.
+- On demand with **Update and restart** on the sidebar page, or `/app-update` in OpenCode. These restart OpenCode straight away when it changed, which stops anything running in any session. ha-bridge restarts when it changed too, which ends any `ha-bridge` watch that's running.
 
 OpenCode stays on version 2. A new major version comes with an app update.
 
@@ -117,7 +135,7 @@ The app's config folder is linked into place on every start, so you can edit it 
 
 ## What the agent knows about the app
 
-The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Two more cover the connections: `opencode-app-home-assistant` for Home Assistant's API and MCP servers, and `opencode-app-music-assistant` for Music Assistant. They all come with the app and change with its releases. The agent asks you rather than updating or restarting OpenCode or the app itself.
+The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Two more cover the connections: `opencode-app-home-assistant` for Home Assistant's API and MCP servers, and `opencode-app-music-assistant` for Music Assistant. They all come with the app and change with its releases. ha-bridge's own skills come with ha-bridge, while its option is on. The agent asks you rather than updating or restarting OpenCode or the app itself.
 
 Your own `AGENTS.md` in the app's config folder is for your instructions, on top of these.
 

@@ -10,6 +10,7 @@ A Home Assistant app that runs OpenCode 2. The image is built from the root `Doc
 - `src/plugin.ts` is an OpenCode plugin, bundled with `effect` and `@opencode/plugin` external, that adds `/app-update`. It talks to the entrypoint over the control socket.
 - `image/mise.toml` is the image's built-in tools, copied to `/etc/mise/config.toml`.
 - `opencode/` holds the app's metadata only: `config.yaml`, `DOCS.md`, `translations/` and the icons.
+- `opencode_manager/` is the same app with the Supervisor's manager role, on the same image. Its `config.yaml` may only differ from the app's where `scripts/check-apps.ts` allows; the rest are links to `opencode/`.
 
 There's no s6-overlay, no bashio and no hassio-addons base: Debian provides the system and mise everything else.
 

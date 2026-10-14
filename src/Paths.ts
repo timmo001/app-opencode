@@ -13,6 +13,10 @@ export interface Interface {
   readonly controlSocket: string;
   /** The OpenCode plugin the image ships. */
   readonly plugin: string;
+  /** ha-bridge's socket, which the image sets in `HA_BRIDGE_SOCK` for every process. */
+  readonly bridgeSocket: string;
+  /** A link to the installed ha-bridge's skills, in OpenCode's system skills folder. */
+  readonly bridgeSkills: string;
 }
 
 export class Service extends Context.Service<Service, Interface>()('app-opencode/Paths') {}
@@ -32,6 +36,14 @@ export const layer = Layer.effect(
       Config.withDefault('/usr/local/share/opencode-app/plugin.js')
     );
 
+    const bridgeSocket = yield* Config.String('HA_BRIDGE_SOCK').pipe(
+      Config.withDefault('/run/ha-bridge.sock')
+    );
+
+    const bridgeSkills = yield* Config.String('OPENCODE_APP_BRIDGE_SKILLS').pipe(
+      Config.withDefault('/etc/opencode/skills/ha-bridge')
+    );
+
     return Service.of({
       data,
       config,
@@ -39,6 +51,8 @@ export const layer = Layer.effect(
       state: `${home}/.local/share/opencode-app`,
       controlSocket,
       plugin,
+      bridgeSocket,
+      bridgeSkills,
     });
   })
 );

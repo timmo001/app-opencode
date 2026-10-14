@@ -21,6 +21,9 @@ ports_description:
 watchdog: tcp://[HOST]:[PORT:49374]
 # Reaches Home Assistant's MCP server through the Supervisor.
 homeassistant_api: true
+# The Supervisor's /core endpoints, which ha-bridge reads Core's journal through.
+hassio_api: true
+hassio_role: homeassistant
 map:
   - type: addon_config
     read_only: false
@@ -36,6 +39,7 @@ options:
   remote_access: false
   cors_origins: []
   home_assistant_mcp: true
+  ha_bridge: true
   system_packages:
     - build-essential
     - dnsutils
@@ -75,6 +79,7 @@ schema:
     - match(^https?://[^/\s]+$)
   home_assistant_mcp: bool
   music_assistant_token: password?
+  ha_bridge: bool
   system_packages:
     - match(^[a-z0-9][a-z0-9+.-]+$)
   tools:

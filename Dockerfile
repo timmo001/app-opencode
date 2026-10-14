@@ -50,7 +50,7 @@ COPY image/bashrc /etc/bash.bashrc
 COPY image/inputrc /etc/opencode-app/inputrc
 COPY image/gitconfig /etc/gitconfig
 COPY image/lazygit.yml /etc/xdg/lazygit/config.yml
-# OpenCode's system config folder, which only holds the app's skill.
+# OpenCode's system config folder. It holds the app's skills, and the app links ha-bridge's in.
 COPY image/skills /etc/opencode/skills
 
 # Node and aube first, since the npm tools install with them. Caches go with the layer.
@@ -72,6 +72,7 @@ COPY --from=build /src/dist/plugin.js /usr/local/share/opencode-app/plugin.js
 
 ENV HOME=/data/home \
     EDITOR=nvim \
+    HA_BRIDGE_SOCK=/run/ha-bridge.sock \
     LANG=C.UTF-8 \
     MISE_YES=1 \
     OPENCODE_DISABLE_AUTOUPDATE=1 \

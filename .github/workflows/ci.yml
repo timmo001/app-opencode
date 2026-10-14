@@ -105,6 +105,7 @@ jobs:
           # fd comes with the image, dust isn't a default so it's downloaded, and eza is a
           # default taken off the list, so it's removed.
           docker exec app fd --version
+          docker exec app ha-bridge --version
           docker exec app dust --version
           if docker exec app eza --version; then exit 1; fi
           sudo test -f config/opencode.json

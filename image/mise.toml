@@ -7,6 +7,8 @@
 "aqua:neovim/neovim" = "latest"
 bun = "latest"
 gh = "latest"
+# Home Assistant from the shell. The app runs `ha-bridge serve`, and each release carries its skills.
+"github:timmo001/ha-bridge" = "latest"
 jq = "latest"
 node = "latest"
 # OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.

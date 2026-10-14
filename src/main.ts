@@ -1,6 +1,7 @@
 import { BunRuntime, BunServices } from '@effect/platform-bun';
 import { Cause, Effect, Layer } from 'effect';
 import { FetchHttpClient } from 'effect/http';
+import { Bridge } from './Bridge.js';
 import { Connections } from './Connections.js';
 import { Control } from './Control.js';
 import { Git } from './Git.js';
@@ -45,6 +46,8 @@ const app = Layer.mergeAll(Control.layer, Ingress.layer, packages).pipe(
   Layer.provideMerge(Updates.layer),
   Layer.provideMerge(OpenCodeServer.layer),
   Layer.provideMerge(Connections.layer),
+  // Before OpenCode, so the agent's first `ha-bridge` command finds the socket.
+  Layer.provideMerge(Bridge.layer),
   Layer.provideMerge(startup),
   Layer.provideMerge(Tools.layer),
   Layer.provideMerge(Options.layer),

@@ -21,10 +21,14 @@ export interface UpgradeResult {
   readonly openCode: { readonly before: string; readonly after: string };
 }
 
-export interface ServerOpenCode {
+export interface SystemTool {
   readonly path: string;
   readonly version: string;
+  /** The version's install folder. */
+  readonly installPath: string;
 }
+
+export type ServerOpenCode = SystemTool;
 
 export interface Interface {
   /** Installs the `tools` option. Never fails: a bad entry is a warning. */
@@ -35,6 +39,8 @@ export interface Interface {
   readonly upgrade: Effect.Effect<UpgradeResult, ToolsError>;
   /** The OpenCode the server runs, resolved from the system config alone, so your layers can't change it. */
   readonly serverOpenCode: Effect.Effect<ServerOpenCode, ToolsError>;
+  /** A built-in tool's command, resolved from the system config alone like the server's OpenCode. */
+  readonly systemTool: (tool: string, command: string) => Effect.Effect<SystemTool, ToolsError>;
   /** Entries from the options that couldn't be installed, for the sidebar page. */
   readonly warnings: Effect.Effect<ReadonlyArray<string>>;
 }
@@ -126,12 +132,20 @@ export const layer = Layer.effect(
       MISE_GLOBAL_CONFIG_FILE: `${systemConfig}/config.toml`,
     };
 
-    const serverOpenCode = Effect.gen(function* () {
-      const which = yield* mise(['which', 'opencode'], systemOnly);
-      const current = yield* mise(['current', openCodeTool], systemOnly);
+    const systemTool = (tool: string, command: string) =>
+      Effect.gen(function* () {
+        const which = yield* mise(['which', command], systemOnly);
+        const current = yield* mise(['current', tool], systemOnly);
+        const where = yield* mise(['where', tool], systemOnly);
 
-      return { path: which.stdout.trim(), version: current.stdout.trim() };
-    }).pipe(toolsError('Finding the server’s OpenCode'));
+        return {
+          path: which.stdout.trim(),
+          version: current.stdout.trim(),
+          installPath: where.stdout.trim(),
+        };
+      }).pipe(toolsError(`Finding ${command}`));
+
+    const serverOpenCode = systemTool(openCodeTool, 'opencode');
 
     const apt = (args: ReadonlyArray<string>) =>
       Command.run('apt-get', args, {
@@ -327,6 +341,7 @@ export const layer = Layer.effect(
       installPackages: installPackages.pipe(Effect.withSpan('Tools.installPackages')),
       upgrade,
       serverOpenCode,
+      systemTool,
       warnings: Ref.get(warningsRef),
     });
   })

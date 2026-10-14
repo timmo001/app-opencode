@@ -1,11 +1,15 @@
 import { Context, Effect, Layer } from 'effect';
+import { Bridge } from './Bridge.js';
 import { OpenCodeServer } from './OpenCodeServer.js';
 import { Tools } from './Tools.js';
 
 export interface Interface {
-  /** Updates the tools. OpenCode changing is reported, not acted on, so the caller can warn first. */
+  /**
+   * Updates the tools and restarts ha-bridge when it changed. OpenCode changing is reported, not
+   * acted on, so the caller can warn first.
+   */
   readonly check: Effect.Effect<Tools.UpgradeResult, Tools.ToolsError>;
-  /** Updates the tools, then restarts the server when its OpenCode changed. */
+  /** Updates the tools, then restarts ha-bridge and the server when they changed. */
   readonly checkAndRestart: Effect.Effect<
     Tools.UpgradeResult,
     Tools.ToolsError | OpenCodeServer.OpenCodeServerError
@@ -22,13 +26,18 @@ export const layer = Layer.effect(
   Effect.gen(function* () {
     const tools = yield* Tools.Service;
     const server = yield* OpenCodeServer.Service;
+    const bridge = yield* Bridge.Service;
 
-    const checkAndRestart = tools.upgrade.pipe(
+    const check = tools.upgrade.pipe(
+      Effect.tap((result) => (Bridge.changed(result) ? bridge.restart : Effect.void))
+    );
+
+    const checkAndRestart = check.pipe(
       Effect.tap((result) => (openCodeChanged(result) ? server.restart : Effect.void))
     );
 
-    // Every 12 hours the update is installed but OpenCode isn't restarted under you: the new version
-    // runs from the next restart.
+    // Every 12 hours the update is installed but nothing is restarted under you: new versions of
+    // OpenCode and ha-bridge run from the next restart.
     yield* tools.upgrade.pipe(
       Effect.tap((result) =>
         openCodeChanged(result)
@@ -43,7 +52,7 @@ export const layer = Layer.effect(
       Effect.forkScoped
     );
 
-    return Service.of({ check: tools.upgrade, checkAndRestart });
+    return Service.of({ check, checkAndRestart });
   })
 );
 

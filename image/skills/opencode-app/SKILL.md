@@ -56,7 +56,7 @@ Connecting to Home Assistant, and to apps such as Music Assistant, has its own s
 
 ## Updating and restarting
 
-Never update or restart OpenCode or the app yourself, and never stop or kill OpenCode's server or the `opencode-app` process: either ends every session, including this one. When one is needed, say why and ask the user to do it:
+Never update or restart OpenCode or the app yourself, and never stop or kill OpenCode's server, the `opencode-app` process or the app's `ha-bridge serve`: the first two end every session, including this one. When one is needed, say why and ask the user to do it:
 
 - **Updating OpenCode and the app's tools:** the user runs `/app-update` in OpenCode, or selects **Update and restart** on the app's sidebar page. Both restart OpenCode straight away if it changed. The app also checks on start and every 12 hours.
 - **Applying a change to the app's options, or getting a clean container:** the user restarts the app from its page in Home Assistant.

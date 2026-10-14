@@ -30,6 +30,11 @@ configuration:
       Optional. A long-lived token from Music Assistant's app, so the agent can use its API, and
       its MCP server when that plugin is on. Create a long-lived access token in Music Assistant
       under Settings > Profile. See the Documentation tab for how to set it up.
+  ha_bridge:
+    name: ha-bridge
+    description: >-
+      Run ha-bridge, so the agent can read and control Home Assistant from the shell: states,
+      actions, watches, automations, scripts and logs.
   system_packages:
     name: System packages
     description: >-

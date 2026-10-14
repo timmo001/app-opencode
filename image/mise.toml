@@ -1,18 +1,21 @@
 # The tools the app comes with, installed into the image and kept up to date by the app.
 # Copied to /etc/mise/config.toml, mise's system config. Your own tools go in the app's
 # config folder (mise.toml), which can't change these.
+#
+# mise holds back releases for 24 hours. Fast-moving tools wait 2 hours instead, and ha-bridge,
+# released alongside the app, doesn't wait.
 
 [tools]
-"aqua:aubepkg/aube" = "latest"
+"aqua:aubepkg/aube" = { version = "latest", minimum_release_age = "2h" }
 "aqua:neovim/neovim" = "latest"
 bun = "latest"
 gh = "latest"
 # Home Assistant from the shell. The app runs `ha-bridge serve`, and each release carries its skills.
-"github:timmo001/ha-bridge" = "latest"
+"github:timmo001/ha-bridge" = { version = "latest", minimum_release_age = "0s" }
 jq = "latest"
 node = "latest"
 # OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.
-"npm:@opencode/cli" = { version = "2", allow_builds = true }
+"npm:@opencode/cli" = { version = "2", allow_builds = true, minimum_release_age = "2h" }
 ripgrep = "latest"
 
 [settings]

@@ -36,10 +36,36 @@ map:
     read_only: false
   - type: share
     read_only: false
-# Installed tools come back from mise on the next start, so backups skip them.
+# Everything mise installs at runtime is in home/.local/share/mise: the tools option comes back
+# on the next start and `mise install` brings back the rest. Caches, dependencies and OpenCode's
+# undo snapshots can be rebuilt too, so backups skip them.
 backup_exclude:
+  - .venv
+  - home/.bun/install/cache
+  - home/.bundle/cache
+  - home/.cabal/packages
   - home/.cache
+  - home/.cargo/git
+  - home/.cargo/registry
+  - home/.conda/pkgs
+  - home/.gem/ruby/*/cache
+  - home/.gradle/caches
+  - home/.gradle/wrapper/dists
+  - home/.hex/packages
+  - home/.local/share/aube/store
+  - home/.local/share/gem/ruby/*/cache
   - home/.local/share/mise
+  - home/.local/share/opencode/snapshot
+  - home/.local/share/pnpm/store
+  - home/.m2/repository
+  - home/.npm
+  - home/.nuget/packages
+  - home/.pnpm-store
+  - home/.pub-cache/git
+  - home/.pub-cache/hosted
+  - home/.yarn/berry/cache
+  - home/go/pkg
+  - node_modules
 options:
   remote_access: false
   cors_origins: []

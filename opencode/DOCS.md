@@ -131,7 +131,7 @@ OpenCode stays on version 2. A new major version comes with an app update.
 | `/share`                                                | Home Assistant's shared folder                                       | Yes                |
 | The app's config folder (`addon_configs/<id>_opencode`) | Your `opencode.json`, `AGENTS.md`, `skills` and `mise.toml`          | Yes, and backed up |
 
-Backups leave out what can be rebuilt: `~/.cache`, everything mise installs, projects' `node_modules` and `.venv` folders, package manager caches and stores (npm, pnpm, aube, Yarn, Bun, Go, Cargo, RubyGems, Bundler, Maven, Gradle, NuGet, pub, Hex, Cabal and Conda), and OpenCode's undo snapshots. After a restore, the `tools` option installs again on the next start; run `mise install` for tools you added with `mise use` or a project's `mise.toml`.
+Backups leave out what can be rebuilt: `~/.cache`, everything mise installs, projects' `node_modules` and `.venv` folders, package manager caches and stores (npm, pnpm, aube, Yarn, Bun, Go, Cargo, RubyGems, Bundler, Maven, Gradle, NuGet, pub, Hex, Cabal and Conda), and OpenCode's undo snapshots and reference checkouts. After a restore, the `tools` option installs again on the next start; run `mise install` for tools you added with `mise use` or a project's `mise.toml`.
 
 The app's config folder is linked into place on every start, so you can edit it with the File editor or Samba apps. Files that are missing are created again with a starting point.
 

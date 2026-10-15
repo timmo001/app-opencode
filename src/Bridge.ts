@@ -3,6 +3,7 @@ import { ChildProcess, ChildProcessSpawner } from 'effect/process';
 import { Log } from './Log.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
+import { Skills } from './Skills.js';
 import { Tools } from './Tools.js';
 
 /** The tool `image/mise.toml` installs ha-bridge as. */
@@ -38,22 +39,12 @@ export const layer = Layer.effect(
 
     const crashed = yield* Queue.unbounded<void>();
 
-    // The skills come in the release with the binary, so they always match it. Releases from
-    // before they did have none.
-    const linkSkills = Effect.fn('Bridge.linkSkills')(function* (installPath: string) {
-      const skills = `${installPath}/skills`;
-
-      yield* fs.remove(paths.bridgeSkills).pipe(Effect.ignore);
-
-      if (yield* fs.exists(skills)) {
-        yield* fs.symlink(skills, paths.bridgeSkills);
-      }
-    });
-
     const start = Effect.gen(function* () {
       const bridge = yield* tools.systemTool(tool, 'ha-bridge');
 
-      yield* linkSkills(bridge.installPath);
+      yield* Skills.link(bridge.installPath, paths.bridgeSkills).pipe(
+        Effect.provideService(FileSystem.FileSystem, fs)
+      );
       yield* Log.step(`Starting ha-bridge ${bridge.version}`);
 
       const scope = yield* Scope.make();

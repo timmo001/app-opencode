@@ -29,6 +29,7 @@ With the `home_assistant_mcp` app option on (the default), OpenCode connects to 
 - If `home-assistant` shows as failed, ask the user to add the [Model Context Protocol](https://www.home-assistant.io/integrations/mcp_server/) integration in **Settings** > **Devices & services**. Its options choose which tools you get, and can make them read-only.
 - To reach another MCP server, the user adds it with the [Model Context Protocol Client](https://www.home-assistant.io/integrations/mcp/) integration (Home Assistant offers apps that announce one as discovered), then restarts this app. The list is only read when OpenCode starts, and needs Home Assistant 2026.9 or newer.
 - Don't add these servers to `opencode.json` by hand: the app does it on every start, and the token never reaches a file that way.
+- When Triage's server is connected, load the `triage-resolve` skill after fixing an error, crash or failure Triage collected, so its issues get closed.
 
 ## REST API
 

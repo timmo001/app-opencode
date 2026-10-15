@@ -12,6 +12,8 @@ bun = "latest"
 gh = "latest"
 # Home Assistant from the shell. The app runs `ha-bridge serve`, and each release carries its skills.
 "github:timmo001/ha-bridge" = { version = "latest", minimum_release_age = "0s" }
+# For its skills, which the app links in for Triage's MCP server, such as triage-resolve.
+"github:timmo001/triage" = "latest"
 jq = "latest"
 node = "latest"
 # OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.

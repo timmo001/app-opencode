@@ -17,6 +17,8 @@ export interface Interface {
   readonly bridgeSocket: string;
   /** A link to the installed ha-bridge's skills, in OpenCode's system skills folder. */
   readonly bridgeSkills: string;
+  /** A link to the installed triage's skills, in OpenCode's system skills folder. */
+  readonly triageSkills: string;
 }
 
 export class Service extends Context.Service<Service, Interface>()('app-opencode/Paths') {}
@@ -44,6 +46,10 @@ export const layer = Layer.effect(
       Config.withDefault('/etc/opencode/skills/ha-bridge')
     );
 
+    const triageSkills = yield* Config.String('OPENCODE_APP_TRIAGE_SKILLS').pipe(
+      Config.withDefault('/etc/opencode/skills/triage')
+    );
+
     return Service.of({
       data,
       config,
@@ -53,6 +59,7 @@ export const layer = Layer.effect(
       plugin,
       bridgeSocket,
       bridgeSkills,
+      triageSkills,
     });
   })
 );

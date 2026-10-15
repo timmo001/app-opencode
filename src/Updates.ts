@@ -1,6 +1,7 @@
 import { Context, Effect, Layer } from 'effect';
 import { Bridge } from './Bridge.js';
 import { OpenCodeServer } from './OpenCodeServer.js';
+import { Skills } from './Skills.js';
 import { Tools } from './Tools.js';
 
 export interface Interface {
@@ -27,8 +28,14 @@ export const layer = Layer.effect(
     const tools = yield* Tools.Service;
     const server = yield* OpenCodeServer.Service;
     const bridge = yield* Bridge.Service;
+    const skills = yield* Skills.Service;
+
+    // A new triage only needs its skills linked again, which is safe to do at any time.
+    const relinkSkills = (result: Tools.UpgradeResult) =>
+      Skills.triageChanged(result) ? skills.linkTriage : Effect.void;
 
     const check = tools.upgrade.pipe(
+      Effect.tap(relinkSkills),
       Effect.tap((result) => (Bridge.changed(result) ? bridge.restart : Effect.void))
     );
 
@@ -39,6 +46,7 @@ export const layer = Layer.effect(
     // Every 12 hours the update is installed but nothing is restarted under you: new versions of
     // OpenCode and ha-bridge run from the next restart.
     yield* tools.upgrade.pipe(
+      Effect.tap(relinkSkills),
       Effect.tap((result) =>
         openCodeChanged(result)
           ? Effect.logInfo(

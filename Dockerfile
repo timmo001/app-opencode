@@ -50,7 +50,8 @@ COPY image/bashrc /etc/bash.bashrc
 COPY image/inputrc /etc/opencode-app/inputrc
 COPY image/gitconfig /etc/gitconfig
 COPY image/lazygit.yml /etc/xdg/lazygit/config.yml
-# OpenCode's system config folder. It holds the app's skills, and the app links ha-bridge's in.
+# OpenCode's system config folder. It holds the app's skills, and the app links ha-bridge's and
+# triage's in.
 COPY image/skills /etc/opencode/skills
 
 # Node and aube first, since the npm tools install with them. Caches go with the layer.

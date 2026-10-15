@@ -11,6 +11,7 @@ import { Log } from './Log.js';
 import { OpenCodeServer } from './OpenCodeServer.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
+import { Skills } from './Skills.js';
 import { Tools } from './Tools.js';
 import { Updates } from './Updates.js';
 
@@ -48,6 +49,8 @@ const app = Layer.mergeAll(Control.layer, Ingress.layer, packages).pipe(
   Layer.provideMerge(Connections.layer),
   // Before OpenCode, so the agent's first `ha-bridge` command finds the socket.
   Layer.provideMerge(Bridge.layer),
+  // Before OpenCode, so triage's skills are there when it starts.
+  Layer.provideMerge(Skills.layer),
   Layer.provideMerge(startup),
   Layer.provideMerge(Tools.layer),
   Layer.provideMerge(Options.layer),

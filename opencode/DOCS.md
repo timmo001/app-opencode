@@ -52,6 +52,8 @@ The app talks to Home Assistant through the Supervisor, with the app's own token
 
 Apps such as [Triage](https://github.com/timmo001/triage) can offer their own MCP server to Home Assistant. Once you've added it with Home Assistant's [Model Context Protocol Client](https://www.home-assistant.io/integrations/mcp/) integration, the app connects OpenCode to it too, through Home Assistant, named after the integration entry (for example `triage`). The list is read each time OpenCode starts, so after adding one, restart the app. This needs Home Assistant 2026.9 or newer.
 
+The app comes with Triage's skills, such as `triage-resolve`, which has the agent close the issues Triage collected once it has fixed them. They use Triage's MCP server, so add that first.
+
 ### `music_assistant_token`
 
 Optional. Connects the agent to [Music Assistant](https://www.music-assistant.io)'s app, so it can browse your library and control playback. Music Assistant has to be running as an app on the same Home Assistant.

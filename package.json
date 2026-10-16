@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@effect/platform-bun": "4.0.5",
-    "@opencode/client": "2.0.30",
-    "@opencode/plugin": "2.0.30",
+    "@opencode/client": "2.0.31",
+    "@opencode/plugin": "2.0.31",
     "effect": "4.0.5",
     "uqr": "0.1.3"
   },

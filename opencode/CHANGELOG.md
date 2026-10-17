@@ -1,1 +1,3 @@
-- Fix the terminal's text looking squashed, by giving its rows the font's full height
+- The sidebar's terminals use OpenCode's own build of ghostty-web, the one its web app uses, so text is no longer squashed and is drawn on the screen's pixel grid.
+- The sidebar's tabs have icons.
+- The docs and option labels name Home Assistant Bridge in full, with its `ha-bridge` command.

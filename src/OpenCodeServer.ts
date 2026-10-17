@@ -35,6 +35,11 @@ export interface Info {
   readonly remoteUrl: string | undefined;
 }
 
+export interface TerminalSize {
+  readonly cols: number;
+  readonly rows: number;
+}
+
 export interface Interface {
   /** A one-time code that signs a browser in to OpenCode at `/auth/connect/<code>`. */
   readonly pair: Effect.Effect<PairCode, OpenCodeServerError>;
@@ -42,6 +47,16 @@ export interface Interface {
   readonly info: Effect.Effect<Info, OpenCodeServerError>;
   /** Stops the server and starts the OpenCode the system config resolves to now. */
   readonly restart: Effect.Effect<void, OpenCodeServerError>;
+  /** Starts a terminal in the home folder, running `command` or OpenCode's default shell. */
+  readonly createPty: (input: {
+    readonly title: string;
+    readonly command?: string;
+  }) => Effect.Effect<PtyID, OpenCodeServerError>;
+  /** Whether the terminal is still running. One from before a restart is gone. */
+  readonly ptyRunning: (id: PtyID) => Effect.Effect<boolean, OpenCodeServerError>;
+  readonly resizePty: (id: PtyID, size: TerminalSize) => Effect.Effect<void, OpenCodeServerError>;
+  /** The terminal's WebSocket, with a ticket that lets it in once without the server's password. */
+  readonly ptySocketUrl: (id: PtyID) => Effect.Effect<string, OpenCodeServerError>;
 }
 
 export class OpenCodeServerError extends Schema.TaggedError<OpenCodeServerError>()(
@@ -60,9 +75,13 @@ export class Service extends Context.Service<Service, Interface>()('app-opencode
 
 type Client = Effect.Success<ReturnType<typeof OpenCode.make>>;
 
+export type PtyID = Effect.Success<ReturnType<Client['pty']['create']>>['data']['id'];
+
 interface Running {
   readonly scope: Scope.Closeable;
   readonly client: Client;
+  /** Where the server listens, from `service.json`. */
+  readonly url: string;
 }
 
 const serverError = (operation: string) =>
@@ -134,14 +153,16 @@ export const layer = Layer.effect(
           : { url: endpoint.url, auth: endpoint.auth }
       );
 
-      const client =
+      const authorized =
         headers === undefined
           ? http
           : HttpClient.mapRequest(http, HttpClientRequest.setHeaders(headers));
 
-      return yield* OpenCode.make({ baseUrl: endpoint.url }).pipe(
-        Effect.provideService(HttpClient.HttpClient, client)
+      const client = yield* OpenCode.make({ baseUrl: endpoint.url }).pipe(
+        Effect.provideService(HttpClient.HttpClient, authorized)
       );
+
+      return { client, url: endpoint.url };
     }).pipe(Effect.provideService(FileSystem.FileSystem, fs));
 
     const start = Effect.gen(function* () {
@@ -187,9 +208,9 @@ export const layer = Layer.effect(
         Effect.forkIn(scope)
       );
 
-      const client = yield* connect.pipe(Effect.onError(() => Scope.close(scope, Exit.void)));
+      const endpoint = yield* connect.pipe(Effect.onError(() => Scope.close(scope, Exit.void)));
 
-      return { scope, client } satisfies Running;
+      return { scope, ...endpoint } satisfies Running;
     }).pipe(serverError('Starting OpenCode'));
 
     const running = yield* SynchronizedRef.make<Running>(yield* start);
@@ -213,24 +234,56 @@ export const layer = Layer.effect(
       Effect.forkScoped
     );
 
-    const withClient = <A, E>(operation: string, use: (client: Client) => Effect.Effect<A, E>) =>
-      SynchronizedRef.get(running).pipe(
-        Effect.flatMap((current) => use(current.client)),
-        serverError(operation)
-      );
+    const withClient = <A, E>(operation: string, use: (current: Running) => Effect.Effect<A, E>) =>
+      SynchronizedRef.get(running).pipe(Effect.flatMap(use), serverError(operation));
 
-    const pair = withClient('Pairing', (client) => client.server.pair()).pipe(
+    const pair = withClient('Pairing', ({ client }) => client.server.pair()).pipe(
       Effect.map((code) => ({ code: code.code, expiresIn: code.expires_in }))
     );
 
-    const info = withClient('Reading the server info', (client) => client.server.info()).pipe(
+    const info = withClient('Reading the server info', ({ client }) => client.server.info()).pipe(
       Effect.map((server) => ({
         version: server.version,
         remoteUrl: server.urls.find((url) => url.startsWith('https:')),
       }))
     );
 
-    return Service.of({ pair, info, restart });
+    // Every terminal call names the same location, which the connect ticket is checked against.
+    const location = { directory: paths.home };
+
+    const createPty = (input: { readonly title: string; readonly command?: string }) =>
+      withClient('Starting a terminal', ({ client }) =>
+        client.pty.create({ ...input, location, cwd: paths.home })
+      ).pipe(Effect.map((created) => created.data.id));
+
+    const ptyRunning = (ptyID: PtyID) =>
+      withClient('Reading a terminal', ({ client }) =>
+        client.pty.get({ ptyID, location }).pipe(
+          Effect.map((pty) => pty.data.status === 'running'),
+          Effect.catchTag('PtyNotFoundError', () => Effect.succeed(false))
+        )
+      );
+
+    const resizePty = (ptyID: PtyID, size: TerminalSize) =>
+      withClient('Resizing a terminal', ({ client }) =>
+        client.pty.update({ ptyID, location, size })
+      ).pipe(Effect.asVoid);
+
+    const ptySocketUrl = (ptyID: PtyID) =>
+      withClient('Connecting to a terminal', ({ client, url }) =>
+        client.pty.connect.token({ ptyID, location, 'x-opencode-ticket': '1' }).pipe(
+          Effect.map((token) => {
+            const socket = new URL(`/api/pty/${encodeURIComponent(ptyID)}/connect`, url);
+            socket.protocol = socket.protocol === 'https:' ? 'wss:' : 'ws:';
+            socket.searchParams.set('location[directory]', location.directory);
+            socket.searchParams.set('ticket', token.data.ticket);
+
+            return socket.href;
+          })
+        )
+      );
+
+    return Service.of({ pair, info, restart, createPty, ptyRunning, resizePty, ptySocketUrl });
   })
 );
 

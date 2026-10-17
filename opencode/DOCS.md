@@ -85,7 +85,7 @@ The plugin is still experimental in Music Assistant. Without it, the agent uses 
 
 ### `ha_bridge`
 
-Runs [ha-bridge](https://ha-bridge.timmo.dev), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each ha-bridge version, so they always match it.
+Runs [Home Assistant Bridge](https://ha-bridge.timmo.dev), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each version, so they always match it.
 
 Which logs it can read depends on which of the two apps you run. See [The two apps](#the-two-apps).
 
@@ -108,7 +108,7 @@ These come with the app and are always there, whatever the `tools` option says:
 - OpenCode 2
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
 - The GitHub CLI (`gh`), `jq`, ripgrep (`rg`) and Neovim (`nvim`), which Git and other tools open for editing
-- [ha-bridge](https://ha-bridge.timmo.dev), which the app runs while the `ha_bridge` option is on
+- [Home Assistant Bridge](https://ha-bridge.timmo.dev), which the app runs while the `ha_bridge` option is on
 - From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
 
 ## The terminal
@@ -128,7 +128,7 @@ There are short Git aliases too, such as `g` for `git`. To change the prompt, ad
 OpenCode and the tools update themselves, without waiting for an app release:
 
 - When the app starts, and every 12 hours. An OpenCode update found on the 12-hour check runs from the next restart, so OpenCode isn't restarted under you.
-- On demand with **Update and restart** on the sidebar page, or `/app-update` in OpenCode. These restart OpenCode straight away when it changed, which stops anything running in any session. ha-bridge restarts when it changed too, which ends any `ha-bridge` watch that's running.
+- On demand with **Update and restart** on the sidebar page, or `/app-update` in OpenCode. These restart OpenCode straight away when it changed, which stops anything running in any session. Home Assistant Bridge restarts when it changed too, which ends any `ha-bridge` watch that's running.
 
 OpenCode stays on version 2. A new major version comes with an app update.
 
@@ -147,7 +147,7 @@ The app's config folder is linked into place on every start, so you can edit it 
 
 ## What the agent knows about the app
 
-The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Two more cover the connections: `opencode-app-home-assistant` for Home Assistant's API and MCP servers, and `opencode-app-music-assistant` for Music Assistant. They all come with the app and change with its releases. ha-bridge's own skills come with ha-bridge, while its option is on. The agent asks you rather than updating or restarting OpenCode or the app itself.
+The app tells the agent about its container in every session: what's kept across restarts and where things live. For the rest, such as which tool layer to use, how to add system packages and how updates work, the agent loads the built-in `opencode-app` skill. Two more cover the connections: `opencode-app-home-assistant` for Home Assistant's API and MCP servers, and `opencode-app-music-assistant` for Music Assistant. They all come with the app and change with its releases. Home Assistant Bridge's own skills come with it, while its option is on. The agent asks you rather than updating or restarting OpenCode or the app itself.
 
 Your own `AGENTS.md` in the app's config folder is for your instructions, on top of these.
 

@@ -1,2 +1,1 @@
-- Fix the Connect panel showing under the OpenCode and Shell tabs, which also gives the terminals the full height
-- Stop the terminal's cursor blinking, which redrew it on every frame
+- Fix the terminal's text looking squashed, by giving its rows the font's full height

@@ -85,7 +85,7 @@ The plugin is still experimental in Music Assistant. Without it, the agent uses 
 
 ### `ha_bridge`
 
-Runs [Home Assistant Bridge](https://ha-bridge.timmo.dev), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each version, so they always match it.
+Runs [Home Assistant Bridge](https://ha-bridge.timmo.dev) (`ha-bridge`), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each version, so they always match it.
 
 Which logs it can read depends on which of the two apps you run. See [The two apps](#the-two-apps).
 
@@ -108,7 +108,7 @@ These come with the app and are always there, whatever the `tools` option says:
 - OpenCode 2
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
 - The GitHub CLI (`gh`), `jq`, ripgrep (`rg`) and Neovim (`nvim`), which Git and other tools open for editing
-- [Home Assistant Bridge](https://ha-bridge.timmo.dev), which the app runs while the `ha_bridge` option is on
+- [Home Assistant Bridge](https://ha-bridge.timmo.dev) (`ha-bridge`), which the app runs while the `ha_bridge` option is on
 - From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
 
 ## The terminal

@@ -33,8 +33,8 @@ configuration:
   ha_bridge:
     name: Home Assistant Bridge
     description: >-
-      Run Home Assistant Bridge, so the agent can read and control Home Assistant from the shell:
-      states, actions, watches, automations, scripts and logs.
+      Run Home Assistant Bridge (ha-bridge), so the agent can read and control Home Assistant from
+      the shell: states, actions, watches, automations, scripts and logs.
   system_packages:
     name: System packages
     description: >-

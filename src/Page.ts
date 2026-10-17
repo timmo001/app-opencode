@@ -322,17 +322,26 @@ export const html = `<!doctype html>
         $('status').textContent = "Couldn't reach the app: " + error.message;
       });
 
-      // The terminals load on first use, so Connect still works if their script doesn't.
+      // The terminals load on first use, so Connect still works if their script doesn't. Only the
+      // shown one is kept open: the others are closed, so they don't redraw, and mounted again,
+      // which replays them, when they're shown.
       const terminals = {};
+      let shown;
       const overlay = (kind) => (text) => {
         $('overlay-' + kind).hidden = text === undefined;
         $('overlay-' + kind).textContent = text ?? '';
       };
 
       const show = async (tab) => {
+        shown = tab;
         for (const name of ['tui', 'shell', 'connect']) {
           $('tab-' + name).setAttribute('aria-selected', String(name === tab));
           $('panel-' + name).hidden = name !== tab;
+        }
+        for (const name of Object.keys(terminals)) {
+          if (name === tab) continue;
+          terminals[name].then((mounted) => mounted.close()).catch(() => undefined);
+          delete terminals[name];
         }
         try {
           localStorage.setItem('opencode-app-tab', tab);
@@ -344,7 +353,8 @@ export const html = `<!doctype html>
           terminals[tab] ??= import('./terminal.js').then(({ mount }) =>
             mount(tab, $('terminal-' + tab), overlay(tab))
           );
-          (await terminals[tab]).show();
+          const mounted = await terminals[tab];
+          if (shown === tab) mounted.focus();
         } catch (error) {
           delete terminals[tab];
           overlay(tab)("Couldn't start the terminal: " + error.message);

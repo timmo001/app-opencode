@@ -7,8 +7,12 @@ import { FitAddon, Terminal, init } from 'ghostty-web';
 export type Kind = 'tui' | 'shell';
 
 export interface Mounted {
-  /** Fits the terminal to its tab, now it's shown, and focuses it. */
-  readonly show: () => void;
+  readonly focus: () => void;
+  /**
+   * Closes the socket and the terminal, so a hidden tab stops redrawing. The terminal keeps
+   * running on the server, and mounting it again replays it.
+   */
+  readonly close: () => void;
 }
 
 const decoder = new TextDecoder();
@@ -48,6 +52,8 @@ export const mount = async (
 
   let socket: WebSocket | undefined;
   let exited = false;
+  let closed = false;
+  let retry: ReturnType<typeof setTimeout> | undefined;
 
   // Each connection replays the terminal from the start, so the screen is cleared first.
   const connect = () => {
@@ -91,7 +97,7 @@ export const mount = async (
       }
 
       status('Reconnecting…');
-      setTimeout(connect, 2000);
+      retry = setTimeout(connect, 2000);
     });
   };
 
@@ -112,11 +118,19 @@ export const mount = async (
   });
 
   connect();
+  terminal.focus();
 
   return {
-    show: () => {
-      fit.fit();
-      terminal.focus();
+    focus: () => terminal.focus(),
+    close: () => {
+      if (closed) return;
+
+      closed = true;
+      clearTimeout(retry);
+      const current = socket;
+      socket = undefined;
+      current?.close();
+      terminal.dispose();
     },
   };
 };

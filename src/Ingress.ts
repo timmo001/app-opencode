@@ -4,6 +4,8 @@ import { HttpClient, HttpRouter, HttpServerRequest, HttpServerResponse } from 'e
 import { renderSVG } from 'uqr';
 import { OpenCodeServer } from './OpenCodeServer.js';
 import { Page } from './Page.js';
+import { Paths } from './Paths.js';
+import { Terminal } from './Terminal.js';
 import { Tools } from './Tools.js';
 import { Updates } from './Updates.js';
 
@@ -26,6 +28,15 @@ const failed = (error: { readonly message: string }) =>
 /** The address the browser reached Home Assistant at, which OpenCode's port shares on your network. */
 const PairRequest = Schema.Struct({
   host: Schema.String.check(Schema.isPattern(/^[A-Za-z0-9.:[\]-]+$/)),
+});
+
+const TerminalPath = Schema.Struct({ kind: Terminal.Kind });
+
+/** The terminal's size comes with the socket, so it starts at the page's size. */
+const TerminalOpen = Schema.Struct({
+  kind: Terminal.Kind,
+  cols: Schema.NumberFromString.pipe(Schema.decodeTo(Terminal.Size.fields.cols)),
+  rows: Schema.NumberFromString.pipe(Schema.decodeTo(Terminal.Size.fields.rows)),
 });
 
 /** The host port the network option maps OpenCode to, if any, for links on your network. */
@@ -124,6 +135,44 @@ const routes = Layer.mergeAll(
       const updates = yield* Updates.Service;
 
       return HttpServerResponse.jsonUnsafe(yield* updates.checkAndRestart);
+    }).pipe(Effect.catch(failed))
+  ),
+  HttpRouter.add(
+    'GET',
+    '/terminal.js',
+    Effect.gen(function* () {
+      const paths = yield* Paths.Service;
+
+      return yield* HttpServerResponse.file(`${paths.web}/terminal.js`, {
+        contentType: 'text/javascript',
+      });
+    }).pipe(Effect.catch(failed))
+  ),
+  HttpRouter.add(
+    'GET',
+    '/api/terminal/:kind',
+    Effect.gen(function* () {
+      const terminal = yield* Terminal.Service;
+      const request = yield* HttpServerRequest.HttpServerRequest;
+      const { kind, ...size } = yield* HttpRouter.schemaParams(TerminalOpen);
+      const socket = yield* request.upgrade;
+
+      yield* terminal.attach(kind, size, socket);
+
+      return HttpServerResponse.empty();
+    }).pipe(Effect.catch(failed))
+  ),
+  HttpRouter.add(
+    'POST',
+    '/api/terminal/:kind/size',
+    Effect.gen(function* () {
+      const terminal = yield* Terminal.Service;
+      const { kind } = yield* HttpRouter.schemaPathParams(TerminalPath);
+      const size = yield* HttpServerRequest.schemaBodyJson(Terminal.Size);
+
+      yield* terminal.resize(kind, size);
+
+      return HttpServerResponse.empty({ status: 204 });
     }).pipe(Effect.catch(failed))
   )
 );

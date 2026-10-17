@@ -13,6 +13,8 @@ export interface Interface {
   readonly controlSocket: string;
   /** The OpenCode plugin the image ships. */
   readonly plugin: string;
+  /** The sidebar page's scripts, built for the browser. */
+  readonly web: string;
   /** ha-bridge's socket, which the image sets in `HA_BRIDGE_SOCK` for every process. */
   readonly bridgeSocket: string;
   /** A link to the installed ha-bridge's skills, in OpenCode's system skills folder. */
@@ -38,6 +40,10 @@ export const layer = Layer.effect(
       Config.withDefault('/usr/local/share/opencode-app/plugin.js')
     );
 
+    const web = yield* Config.String('OPENCODE_APP_WEB').pipe(
+      Config.withDefault('/usr/local/share/opencode-app/web')
+    );
+
     const bridgeSocket = yield* Config.String('HA_BRIDGE_SOCK').pipe(
       Config.withDefault('/run/ha-bridge.sock')
     );
@@ -57,6 +63,7 @@ export const layer = Layer.effect(
       state: `${home}/.local/share/opencode-app`,
       controlSocket,
       plugin,
+      web,
       bridgeSocket,
       bridgeSkills,
       triageSkills,

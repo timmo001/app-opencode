@@ -12,6 +12,7 @@ import { OpenCodeServer } from './OpenCodeServer.js';
 import { Options } from './Options.js';
 import { Paths } from './Paths.js';
 import { Skills } from './Skills.js';
+import { Terminal } from './Terminal.js';
 import { Tools } from './Tools.js';
 import { Updates } from './Updates.js';
 
@@ -44,6 +45,7 @@ const packages = Layer.effectDiscard(
 );
 
 const app = Layer.mergeAll(Control.layer, Ingress.layer, packages).pipe(
+  Layer.provideMerge(Terminal.layer),
   Layer.provideMerge(Updates.layer),
   Layer.provideMerge(OpenCodeServer.layer),
   Layer.provideMerge(Connections.layer),

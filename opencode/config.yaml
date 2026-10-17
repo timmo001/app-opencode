@@ -1,7 +1,7 @@
 ---
 name: OpenCode
 # Set to the release version at release time.
-version: 0.3.0
+version: 0.3.1
 slug: opencode
 description: An AI coding agent for your Home Assistant setup, powered by OpenCode
 url: https://github.com/timmo001/app-opencode

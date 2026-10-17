@@ -3,7 +3,7 @@
 # scripts/check-apps.ts allows may differ; everything else must match ../opencode/config.yaml.
 name: OpenCode (manager access)
 # Set to the release version at release time, with ../opencode/config.yaml.
-version: 0.3.0
+version: 0.3.1
 slug: opencode_manager
 description: >-
   OpenCode with the Supervisor's manager role, so the agent can read every log and manage

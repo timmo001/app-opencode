@@ -25,7 +25,8 @@ export const mount = async (
   await init();
 
   const terminal = new Terminal({
-    cursorBlink: true,
+    // A blinking cursor redraws its line on every frame.
+    cursorBlink: false,
     fontSize: 14,
     fontFamily: 'ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace',
     scrollback: 10000,

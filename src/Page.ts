@@ -60,7 +60,7 @@ export const html = `<!doctype html>
         color: #ddd;
         font-size: 0.85rem;
       }
-      #panel-connect {
+      #panel-connect:not([hidden]) {
         overflow: auto;
         display: grid;
         place-items: center;

@@ -15,9 +15,55 @@ export const html = `<!doctype html>
       }
       body {
         margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+      }
+      nav {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+      }
+      nav button {
+        border: none;
+        border-radius: 0.4rem;
+        padding: 0.4rem 0.8rem;
+      }
+      nav button[aria-selected='true'] {
+        background: color-mix(in srgb, #18bcf2 25%, transparent);
+      }
+      .panel {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+      }
+      .panel[hidden] {
+        display: none;
+      }
+      .terminal {
+        background: #1e1e1e;
+      }
+      .terminal > div {
+        position: absolute;
+        inset: 0.25rem 0 0 0.5rem;
+      }
+      .terminal .overlay {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.75rem;
+        margin: 0;
+        padding: 0.3rem 0.6rem;
+        border-radius: 0.4rem;
+        background: #333;
+        color: #ddd;
+        font-size: 0.85rem;
+      }
+      #panel-connect {
+        overflow: auto;
         display: grid;
         place-items: center;
-        min-height: 100vh;
       }
       main {
         max-width: 32rem;
@@ -81,34 +127,49 @@ export const html = `<!doctype html>
     </style>
   </head>
   <body>
-    <main>
-      <h1>OpenCode</h1>
-      <p id="status" class="muted">Loading…</p>
-      <div class="actions">
-        <button id="open-local" class="primary" hidden>Open on this network</button>
-        <button id="open-remote" class="primary" hidden>Open with remote access</button>
-        <button id="update">Update and restart</button>
-      </div>
-      <p class="muted">
-        Each button signs this browser in to OpenCode with a link that works once, in a new tab. You don't need a
-        password.
-      </p>
-      <h2>Pair a device</h2>
-      <p class="muted">
-        Sign in from your phone, another computer or the OpenCode desktop app: scan the code, or open or paste one
-        of the links there.
-      </p>
-      <div class="actions">
-        <button id="pair">Show a pairing code</button>
-      </div>
-      <div id="pairing" hidden>
-        <div id="qr" class="qr"></div>
-        <div id="links"></div>
-        <p id="expiry" class="muted"></p>
-      </div>
-      <div id="warnings" class="warnings" hidden></div>
-      <p id="message" class="muted"></p>
-    </main>
+    <nav role="tablist">
+      <button id="tab-tui" role="tab" aria-controls="panel-tui">OpenCode</button>
+      <button id="tab-shell" role="tab" aria-controls="panel-shell">Shell</button>
+      <button id="tab-connect" role="tab" aria-controls="panel-connect">Connect</button>
+    </nav>
+    <section id="panel-tui" class="panel terminal" role="tabpanel" hidden>
+      <div id="terminal-tui"></div>
+      <p id="overlay-tui" class="overlay" hidden></p>
+    </section>
+    <section id="panel-shell" class="panel terminal" role="tabpanel" hidden>
+      <div id="terminal-shell"></div>
+      <p id="overlay-shell" class="overlay" hidden></p>
+    </section>
+    <section id="panel-connect" class="panel" role="tabpanel" hidden>
+      <main>
+        <h1>OpenCode</h1>
+        <p id="status" class="muted">Loading…</p>
+        <div class="actions">
+          <button id="open-local" class="primary" hidden>Open on this network</button>
+          <button id="open-remote" class="primary" hidden>Open with remote access</button>
+          <button id="update">Update and restart</button>
+        </div>
+        <p class="muted">
+          Each button signs this browser in to OpenCode with a link that works once, in a new tab. You don't need
+          a password.
+        </p>
+        <h2>Pair a device</h2>
+        <p class="muted">
+          Sign in from your phone, another computer or the OpenCode desktop app: scan the code, or open or paste
+          one of the links there.
+        </p>
+        <div class="actions">
+          <button id="pair">Show a pairing code</button>
+        </div>
+        <div id="pairing" hidden>
+          <div id="qr" class="qr"></div>
+          <div id="links"></div>
+          <p id="expiry" class="muted"></p>
+        </div>
+        <div id="warnings" class="warnings" hidden></div>
+        <p id="message" class="muted"></p>
+      </main>
+    </section>
     <script type="module">
       const $ = (id) => document.getElementById(id);
       let status;
@@ -232,6 +293,47 @@ export const html = `<!doctype html>
       load().catch((error) => {
         $('status').textContent = "Couldn't reach the app: " + error.message;
       });
+
+      // The terminals load on first use, so Connect still works if their script doesn't.
+      const terminals = {};
+      const overlay = (kind) => (text) => {
+        $('overlay-' + kind).hidden = text === undefined;
+        $('overlay-' + kind).textContent = text ?? '';
+      };
+
+      const show = async (tab) => {
+        for (const name of ['tui', 'shell', 'connect']) {
+          $('tab-' + name).setAttribute('aria-selected', String(name === tab));
+          $('panel-' + name).hidden = name !== tab;
+        }
+        try {
+          localStorage.setItem('opencode-app-tab', tab);
+        } catch {
+          // Storage can be blocked in Home Assistant's frame; the page opens on OpenCode then.
+        }
+        if (tab === 'connect') return;
+        try {
+          terminals[tab] ??= import('./terminal.js').then(({ mount }) =>
+            mount(tab, $('terminal-' + tab), overlay(tab))
+          );
+          (await terminals[tab]).show();
+        } catch (error) {
+          delete terminals[tab];
+          overlay(tab)("Couldn't start the terminal: " + error.message);
+        }
+      };
+
+      for (const name of ['tui', 'shell', 'connect']) {
+        $('tab-' + name).addEventListener('click', () => show(name));
+      }
+
+      let saved;
+      try {
+        saved = localStorage.getItem('opencode-app-tab');
+      } catch {
+        saved = null;
+      }
+      show(['tui', 'shell', 'connect'].includes(saved) ? saved : 'tui');
     </script>
   </body>
 </html>

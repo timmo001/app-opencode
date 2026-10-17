@@ -70,6 +70,7 @@ RUN HOME=/root UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python \
 
 COPY --from=build /src/dist/opencode-app /usr/local/bin/opencode-app
 COPY --from=build /src/dist/plugin.js /usr/local/share/opencode-app/plugin.js
+COPY --from=build /src/dist/web /usr/local/share/opencode-app/web
 
 ENV HOME=/data/home \
     EDITOR=nvim \

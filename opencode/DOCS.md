@@ -15,12 +15,20 @@ Both can use all of Home Assistant's own API. Anything the agent runs in the app
 
 ## Opening OpenCode
 
-Open **OpenCode** in the sidebar. The page there shows which OpenCode is running and signs you in with a link that works once, in a new tab. You don't need a password:
+Open **OpenCode** in the sidebar. The page there has three tabs, and opens on the one you used last:
+
+- **OpenCode** runs OpenCode's terminal app (TUI), connected to the app's server, so it shares sessions with the web app and your paired devices.
+- **Shell** is a terminal in `/data/home`.
+- **Connect** shows which OpenCode is running and signs you in to OpenCode's web app with a link that works once, in a new tab. You don't need a password.
+
+The terminals keep running when you leave the page, so you pick up where you were when you come back, from this browser or another. When the program in one ends, press Enter to start it again. Restarting OpenCode ends them both.
+
+On the **Connect** tab:
 
 - **Open on this network** opens OpenCode at your Home Assistant host's address, on port 49374. It's shown while that port is mapped in the app's **Network** settings.
 - **Open with remote access** opens OpenCode through OpenTunnel. It's shown when the `remote_access` option is on and the tunnel is up.
 
-OpenCode's web app can't run inside the sidebar itself, so it always opens in its own tab. Home Assistant Link (formerly Home Assistant Cloud) reaches the sidebar page from anywhere, but not OpenCode's own port, so away from home use remote access.
+OpenCode's web app can't run inside the sidebar itself, so it always opens in its own tab. Home Assistant Link (formerly Home Assistant Cloud) reaches the sidebar page, terminals included, from anywhere, but not OpenCode's own port, so away from home use remote access for the web app.
 
 ### Pairing another device
 

@@ -17,6 +17,30 @@ const decoder = new TextDecoder();
 const controlFrame = (bytes: Uint8Array): { readonly exited?: boolean } | undefined =>
   bytes[0] === 0 ? JSON.parse(decoder.decode(bytes.subarray(1))) : undefined;
 
+const fontSize = 14;
+const fontFamily = 'ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace';
+
+/**
+ * ghostty-web sizes rows to the letter M, which leaves no room for descenders or block
+ * characters, so the text looks squashed. Rows get the font's full height instead.
+ */
+const fitRows = (terminal: Terminal) => {
+  const context = document.createElement('canvas').getContext('2d');
+
+  if (context === null || terminal.renderer === undefined) return;
+
+  context.font = `${fontSize}px ${fontFamily}`;
+  const text = context.measureText('M');
+
+  Object.assign(terminal.renderer, {
+    metrics: {
+      width: Math.ceil(text.width),
+      height: Math.ceil(text.fontBoundingBoxAscent + text.fontBoundingBoxDescent),
+      baseline: Math.ceil(text.fontBoundingBoxAscent),
+    },
+  });
+};
+
 export const mount = async (
   kind: Kind,
   element: HTMLElement,
@@ -27,8 +51,8 @@ export const mount = async (
   const terminal = new Terminal({
     // A blinking cursor redraws its line on every frame.
     cursorBlink: false,
-    fontSize: 14,
-    fontFamily: 'ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace',
+    fontSize,
+    fontFamily,
     scrollback: 10000,
     theme: { background: '#1e1e1e', foreground: '#d4d4d4', cursor: '#d4d4d4' },
   });
@@ -37,6 +61,8 @@ export const mount = async (
 
   terminal.loadAddon(fit);
   terminal.open(element);
+  await document.fonts.ready;
+  fitRows(terminal);
   fit.fit();
   fit.observeResize();
 

@@ -1,3 +1,1 @@
-- The sidebar's terminals use OpenCode's own build of ghostty-web, the one its web app uses, so text is no longer squashed and is drawn on the screen's pixel grid.
-- The sidebar's tabs have icons.
-- The docs and option labels name Home Assistant Bridge in full, with its `ha-bridge` command.
+- Only the shown terminal in the sidebar stays open, so a hidden one no longer redraws in the background. Switching back to it reconnects and picks up where it was.

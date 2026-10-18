@@ -20,7 +20,7 @@ COPY opencode/config.yaml opencode/config.yaml
 
 RUN bun run build
 
-FROM jdxcode/mise:2026.10.12@sha256:dd80c97d74796d4e65eda39616ba39ea102d717e118de86d985563b71b2c159e AS mise
+FROM jdxcode/mise:2026.10.13@sha256:a2f1563d47f56a7ce69d5c94ac61d9f7af5063613bfd3c50e6268768ed9c87ad AS mise
 
 FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS app
 

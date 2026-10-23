@@ -15,7 +15,7 @@
   "references": {
     "opencode": {
       "repository": "anomalyco/opencode",
-      "branch": "v2.1.3",
+      "branch": "v2.1.4",
       "description": "Use for the OpenCode 2 release the app's client and plugin are built against: serve and service mode, service.json, pairing, the web UI, server auth, plugins and config. Move the branch with the @opencode/client and @opencode/plugin versions in package.json."
     },
     "opentunnel": {

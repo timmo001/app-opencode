@@ -5,7 +5,7 @@
 # installed here, into mise's system folders, and updated at runtime into $HOME, which is kept
 # in /data, so OpenCode and its tools stay current without an app release.
 
-FROM oven/bun:1.4.3@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS build
+FROM oven/bun:1.4.4@sha256:1d22548f177f4ff38e0c15baa3c2c46c6c2060ba2d1bc573bb4720b407548f1d AS build
 
 WORKDIR /src
 

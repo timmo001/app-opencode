@@ -101,6 +101,7 @@ options:
     - shellcheck
     - shfmt
     - starship
+    - usage
     - uv
     - watchexec
     - yq

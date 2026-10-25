@@ -127,7 +127,7 @@ OpenCode's terminal runs bash with tab completion that cycles through matches, a
 - `fzf` and `bat`: `Ctrl+R` searches your history, and `ff` finds a file with a preview
 - `lazygit`: `lg`
 
-There are short Git aliases too, such as `g` for `git`. To change the prompt, add `/data/home/.config/starship.toml`. For your own aliases, add `/data/home/.bash_profile`, which the terminal reads after the app's defaults.
+There are short Git aliases too, such as `g` for `git`. To change the prompt, add `/data/home/.config/starship.toml`. For your own aliases, add `/data/home/.bash_profile`, which the terminal reads after the app's defaults. Your own commands can go in `/data/home/.local/bin`, which comes first on `PATH` for the terminal and the agent.
 
 ## Updates
 

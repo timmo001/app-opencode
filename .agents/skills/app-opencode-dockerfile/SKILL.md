@@ -29,7 +29,7 @@ There's no s6-overlay or bashio. The entrypoint is `/usr/local/bin/opencode-app`
 
 - Pin every `FROM` to a tag and digest. Renovate updates both.
 - `HOME` is `/data/home`, so build steps that need a home set `HOME=/root` and remove its caches in the same layer.
-- `PATH` puts the user's mise shims before the system ones, so runtime upgrades win.
+- `PATH` puts `~/.local/bin`, then the user's mise shims, before the system ones, so the user's own commands and runtime upgrades win. `image/profile.sh` restores the same order for login shells.
 
 ## Checking
 

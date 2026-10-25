@@ -78,7 +78,7 @@ ENV HOME=/data/home \
     LANG=C.UTF-8 \
     MISE_YES=1 \
     OPENCODE_DISABLE_AUTOUPDATE=1 \
-    PATH=/data/home/.local/share/mise/shims:/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    PATH=/data/home/.local/bin:/data/home/.local/share/mise/shims:/usr/local/share/mise/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 WORKDIR /data/home
 

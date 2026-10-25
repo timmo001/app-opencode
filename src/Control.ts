@@ -55,7 +55,8 @@ export const layer = Layer.unwrap(
     yield* fs.remove(paths.controlSocket).pipe(Effect.ignore);
 
     return HttpRouter.serve(routes, { disableListenLog: true }).pipe(
-      Layer.provide(BunHttpServer.layer({ unix: paths.controlSocket }))
+      // An update installs tools for longer than Bun's default 10 second idle timeout.
+      Layer.provide(BunHttpServer.layer({ unix: paths.controlSocket, idleTimeout: 0 }))
     );
   })
 );

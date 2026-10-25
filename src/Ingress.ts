@@ -187,7 +187,8 @@ export const layer = Layer.unwrap(
     );
 
     return HttpRouter.serve(routes, { middleware: ingressGuard(supervisor) }).pipe(
-      Layer.provide(BunHttpServer.layer({ hostname: '0.0.0.0', port }))
+      // The sidebar's update installs tools for longer than Bun's default 10 second idle timeout.
+      Layer.provide(BunHttpServer.layer({ hostname: '0.0.0.0', port, idleTimeout: 0 }))
     );
   })
 );

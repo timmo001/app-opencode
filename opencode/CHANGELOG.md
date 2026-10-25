@@ -1,1 +1,4 @@
-- Only the shown terminal in the sidebar stays open, so a hidden one no longer redraws in the background. Switching back to it reconnects and picks up where it was.
+- The sidebar page takes the whole screen, with a menu button at the start of its tabs to show Home Assistant's sidebar again. Turn off the new `hide_sidebar` option to keep the sidebar.
+- `~/.local/bin` comes first on `PATH`, so scripts you keep there run in OpenCode, its shell commands and the terminals.
+- Updating tools no longer gives up after 10 seconds.
+- `usage` is in the default tools. An existing install keeps its own list, so add it there if you want it.

@@ -9,6 +9,7 @@ const Options = Schema.Struct({
   home_assistant_mcp: Schema.optional(Schema.Boolean),
   music_assistant_token: Schema.optional(Schema.String),
   ha_bridge: Schema.optional(Schema.Boolean),
+  hide_sidebar: Schema.optional(Schema.Boolean),
   system_packages: Schema.Array(Schema.String),
   tools: Schema.Array(Schema.String),
 });

@@ -23,6 +23,8 @@ Open **OpenCode** in the sidebar. The page there has three tabs, and opens on th
 
 The terminals keep running when you leave the page, so you pick up where you were when you come back, from this browser or another. When the program in one ends, press Enter to start it again. Restarting OpenCode ends them both.
 
+The page takes the whole screen: Home Assistant hides its sidebar while it's open. Select the menu button at the start of the tabs to show the sidebar again. To keep the sidebar, turn off the [`hide_sidebar`](#hide_sidebar) option.
+
 On the **Connect** tab:
 
 - **Open on this network** opens OpenCode at your Home Assistant host's address, on port 49374. It's shown while that port is mapped in the app's **Network** settings.
@@ -88,6 +90,10 @@ The plugin is still experimental in Music Assistant. Without it, the agent uses 
 Runs [Home Assistant Bridge](https://ha-bridge.timmo.dev) (`ha-bridge`), so the agent can read and control Home Assistant from the shell: read and watch states, call actions, render templates, read and change automations and scripts, and read Home Assistant's logs. It keeps one connection to Home Assistant, through the Supervisor with the app's token, for every `ha-bridge` command. It's on by default, comes with the app and updates with the other preinstalled tools. Its own skills, `ha-bridge-cli` and `home-assistant`, come with each version, so they always match it.
 
 Which logs it can read depends on which of the two apps you run. See [The two apps](#the-two-apps).
+
+### `hide_sidebar`
+
+Gives the sidebar page the whole screen, without Home Assistant's sidebar and header around it. The menu button at the start of the page's tabs shows the sidebar over the page when you need it. It's on by default; turn it off to keep Home Assistant's sidebar as it is on other pages.
 
 ### `system_packages`
 

@@ -3,6 +3,7 @@ import { Config, Effect, Layer, Option, Schema } from 'effect';
 import { HttpClient, HttpRouter, HttpServerRequest, HttpServerResponse } from 'effect/http';
 import { renderSVG } from 'uqr';
 import { OpenCodeServer } from './OpenCodeServer.js';
+import { Options } from './Options.js';
 import { Page } from './Page.js';
 import { Paths } from './Paths.js';
 import { Terminal } from './Terminal.js';
@@ -85,6 +86,7 @@ const routes = Layer.mergeAll(
     Effect.gen(function* () {
       const server = yield* OpenCodeServer.Service;
       const tools = yield* Tools.Service;
+      const options = yield* Options.Service;
       const running = yield* server.info.pipe(Effect.option);
       const installed = yield* tools.serverOpenCode.pipe(Effect.option);
 
@@ -96,6 +98,7 @@ const routes = Layer.mergeAll(
         installed: Option.getOrNull(Option.map(installed, (openCode) => openCode.version)),
         hostPort: yield* hostPort,
         warnings: yield* tools.warnings,
+        hideSidebar: options.hide_sidebar !== false,
       });
     })
   ),

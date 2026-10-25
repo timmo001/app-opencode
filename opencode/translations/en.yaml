@@ -35,6 +35,11 @@ configuration:
     description: >-
       Run Home Assistant Bridge (ha-bridge), so the agent can read and control Home Assistant from
       the shell: states, actions, watches, automations, scripts and logs.
+  hide_sidebar:
+    name: Hide the Home Assistant sidebar
+    description: >-
+      Give the sidebar page the whole screen, with a menu button on it to show Home Assistant's
+      sidebar when you need it.
   system_packages:
     name: System packages
     description: >-

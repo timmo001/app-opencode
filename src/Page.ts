@@ -42,6 +42,15 @@ export const html = `<!doctype html>
       nav button[aria-selected='true'] {
         background: color-mix(in srgb, #18bcf2 25%, transparent);
       }
+      nav [role='tablist'] {
+        display: contents;
+      }
+      nav button[hidden] {
+        display: none;
+      }
+      #menu {
+        padding: 0.4rem;
+      }
       .panel {
         flex: 1;
         min-height: 0;
@@ -135,30 +144,37 @@ export const html = `<!doctype html>
     </style>
   </head>
   <body>
-    <nav role="tablist">
-      <button id="tab-tui" role="tab" aria-controls="panel-tui">
-        <svg viewBox="96 96 320 320" aria-hidden="true">
-          <path d="M320 224V352H192V224H320Z" opacity="0.5" />
-          <path fill-rule="evenodd" d="M384 416H128V96H384V416ZM320 160H192V352H320V160Z" />
-        </svg>
-        OpenCode
-      </button>
-      <button id="tab-shell" role="tab" aria-controls="panel-shell">
+    <nav>
+      <button id="menu" aria-label="Home Assistant sidebar" title="Home Assistant sidebar" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M20,19V7H4V19H20M20,3A2,2 0 0,1 22,5V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V5C2,3.89 2.9,3 4,3H20M13,17V15H18V17H13M9.58,13L5.57,9H8.4L11.7,12.3C12.09,12.69 12.09,13.33 11.7,13.72L8.42,17H5.59L9.58,13Z"
-          />
+          <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
         </svg>
-        Shell
       </button>
-      <button id="tab-connect" role="tab" aria-controls="panel-connect">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"
-          />
-        </svg>
-        Connect
-      </button>
+      <div role="tablist">
+        <button id="tab-tui" role="tab" aria-controls="panel-tui">
+          <svg viewBox="96 96 320 320" aria-hidden="true">
+            <path d="M320 224V352H192V224H320Z" opacity="0.5" />
+            <path fill-rule="evenodd" d="M384 416H128V96H384V416ZM320 160H192V352H320V160Z" />
+          </svg>
+          OpenCode
+        </button>
+        <button id="tab-shell" role="tab" aria-controls="panel-shell">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20,19V7H4V19H20M20,3A2,2 0 0,1 22,5V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V5C2,3.89 2.9,3 4,3H20M13,17V15H18V17H13M9.58,13L5.57,9H8.4L11.7,12.3C12.09,12.69 12.09,13.33 11.7,13.72L8.42,17H5.59L9.58,13Z"
+            />
+          </svg>
+          Shell
+        </button>
+        <button id="tab-connect" role="tab" aria-controls="panel-connect">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"
+            />
+          </svg>
+          Connect
+        </button>
+      </div>
     </nav>
     <section id="panel-tui" class="panel terminal" role="tabpanel" hidden>
       <div id="terminal-tui"></div>
@@ -318,9 +334,34 @@ export const html = `<!doctype html>
         }
       });
 
-      load().catch((error) => {
-        $('status').textContent = "Couldn't reach the app: " + error.message;
+      // With the hide_sidebar option, Home Assistant's kiosk mode hides its sidebar and header
+      // around the frame, and the menu button opens the sidebar over the page. The button only
+      // shows once Home Assistant answers, so an older one that ignores kiosk mode keeps its own
+      // header and doesn't get two. Home Assistant keeps kiosk mode across a reload of the frame,
+      // so with the option off the page leaves it.
+      const kioskMode = (enable) => {
+        if (window.parent === window) return;
+        if (!enable) {
+          window.parent.postMessage({ type: 'home-assistant/unsubscribe-properties' }, '*');
+          return;
+        }
+        window.addEventListener('message', (event) => {
+          if (event.source === window.parent && event.data?.type === 'home-assistant/properties') {
+            $('menu').hidden = false;
+          }
+        });
+        window.parent.postMessage({ type: 'home-assistant/subscribe-properties', kioskMode: true }, '*');
+      };
+
+      $('menu').addEventListener('click', () => {
+        window.parent.postMessage({ type: 'home-assistant/toggle-menu' }, '*');
       });
+
+      load()
+        .then(() => kioskMode(status.hideSidebar))
+        .catch((error) => {
+          $('status').textContent = "Couldn't reach the app: " + error.message;
+        });
 
       // The terminals load on first use, so Connect still works if their script doesn't. Only the
       // shown one is kept open: the others are closed, so they don't redraw, and mounted again,

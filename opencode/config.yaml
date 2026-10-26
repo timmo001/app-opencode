@@ -33,7 +33,8 @@ map:
     read_only: false
 # Everything mise installs at runtime is in home/.local/share/mise: the tools option comes back
 # on the next start and `mise install` brings back the rest. Caches, dependencies and OpenCode's
-# undo snapshots and reference checkouts can be rebuilt too, so backups skip them.
+# undo snapshots and reference checkouts can be rebuilt too, so backups skip them, as do dotfiles
+# checkouts, which are cloned again from their remotes.
 backup_exclude:
   - .venv
   - home/.bun/install/cache
@@ -43,16 +44,19 @@ backup_exclude:
   - home/.cargo/git
   - home/.cargo/registry
   - home/.conda/pkgs
+  - home/.config/dotfiles*
   - home/.gem/ruby/*/cache
   - home/.gradle/caches
   - home/.gradle/wrapper/dists
   - home/.hex/packages
   - home/.local/share/aube/store
+  - home/.local/share/dot
   - home/.local/share/gem/ruby/*/cache
   - home/.local/share/mise
   - home/.local/share/opencode/repos
   - home/.local/share/opencode/snapshot
   - home/.local/share/pnpm/store
+  - home/.local/share/uv
   - home/.m2/repository
   - home/.npm
   - home/.nuget/packages

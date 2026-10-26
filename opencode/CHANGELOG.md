@@ -1,1 +1,1 @@
-- Backups skip `~/.config/dotfiles*` checkouts, dot's skills checkout in `~/.local/share/dot` and uv's Python versions and tools in `~/.local/share/uv`, which can all be cloned or installed again. Push anything in those checkouts you want to keep before relying on a backup.
+- Backups skip the Rust toolchains in `~/.rustup`, which mise installs again.

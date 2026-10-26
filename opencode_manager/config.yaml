@@ -68,6 +68,7 @@ backup_exclude:
   - home/.pnpm-store
   - home/.pub-cache/git
   - home/.pub-cache/hosted
+  - home/.rustup
   - home/.yarn/berry/cache
   - home/go/pkg
   - node_modules

@@ -1,4 +1,1 @@
-- The sidebar page takes the whole screen, with a menu button at the start of its tabs to show Home Assistant's sidebar again. Turn off the new `hide_sidebar` option to keep the sidebar.
-- `~/.local/bin` comes first on `PATH`, so scripts you keep there run in OpenCode, its shell commands and the terminals.
-- Updating tools no longer gives up after 10 seconds.
-- `usage` is in the default tools. An existing install keeps its own list, so add it there if you want it.
+- Backups skip `~/.config/dotfiles*` checkouts, dot's skills checkout in `~/.local/share/dot` and uv's Python versions and tools in `~/.local/share/uv`, which can all be cloned or installed again. Push anything in those checkouts you want to keep before relying on a backup.

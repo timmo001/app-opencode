@@ -109,7 +109,7 @@ The default list is `build-essential`, `dnsutils`, `ffmpeg`, `iputils-ping`, `rs
 
 Developer tools to install with [mise](https://mise.jdx.dev), as `name`, `name@version` or `backend:name@version`, such as `go@1.27` or `npm:prettier@3`. They're installed once and kept between restarts. Without a version, you get the newest, and the app keeps it up to date. A tool mise can't install is skipped, and shown on the sidebar page and in the app's log.
 
-The default list is `actionlint`, `bat`, `deno`, `eza`, `fd`, `fzf`, `go`, `hyperfine`, `just`, `lazygit`, `npm:skills`, `pitchfork`, `pnpm`, `pypi:yamllint`, `python`, `ruff`, `shellcheck`, `shfmt`, `starship`, `usage`, `uv`, `watchexec`, `yq` and `zoxide`. These come with the app, so they're ready without downloading anything. Remove any you don't want and they're gone on the next start.
+The default list is `actionlint`, `bat`, `deno`, `eza`, `fd`, `fzf`, `go`, `hyperfine`, `just`, `lazygit`, `npm:skills`, `pitchfork`, `pnpm`, `pypi:yamllint`, `python@3.14`, `ruff`, `shellcheck`, `shfmt`, `starship`, `usage`, `uv`, `watchexec`, `yq` and `zoxide`. These come with the app, so they're ready without downloading anything. Remove any you don't want and they're gone on the next start. Python stays on the version Home Assistant itself uses: a newer one can lack the prebuilt packages that Python tools such as `yamllint` install from.
 
 ## Preinstalled tools
 

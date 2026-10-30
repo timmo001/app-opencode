@@ -104,7 +104,8 @@ options:
     - pitchfork
     - pnpm
     - pypi:yamllint
-    - python
+    # Home Assistant Core's Python, which Renovate keeps in step. A newer one can lack wheels.
+    - python@3.14
     - ruff
     - shellcheck
     - shfmt

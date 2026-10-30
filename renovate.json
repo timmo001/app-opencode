@@ -1,4 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>timmo001/renovate-config"]
+  "extends": ["github>timmo001/renovate-config"],
+  "customDatasources": {
+    "home-assistant-core-python": {
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/home-assistant/core/dev/.python-version",
+      "format": "plain",
+      "transformTemplates": [
+        "{\"releases\": [{\"version\": $join($split($trim(releases[0].version), \".\")[[0..1]], \".\")}], \"sourceUrl\": \"https://github.com/home-assistant/core\"}"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Keep the tools option's default Python on Home Assistant Core's minor version.",
+      "managerFilePatterns": ["/^opencode(_manager)?/config\\.yaml$/"],
+      "matchStrings": ["\\n\\s*-\\s*python@(?<currentValue>\\d+\\.\\d+)\\n"],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "custom.home-assistant-core-python",
+      "versioningTemplate": "loose"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Core's .python-version has no release dates to wait on.",
+      "matchDatasources": ["custom.home-assistant-core-python"],
+      "minimumReleaseAge": null
+    }
+  ]
 }

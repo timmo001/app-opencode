@@ -1,1 +1,1 @@
-- Use the app from your own terminal over SSH, and add it to [Herdr](https://herdr.dev) as a machine. Add your public key to the new `ssh_authorized_keys` option and give SSH a port in the app's Network settings. Herdr comes with the app.
+- The `tools` option's default Python is now Home Assistant's own version, 3.14, rather than the newest. Python 3.15 is missing prebuilt packages that tools such as `yamllint` need. An existing install keeps its own list, so change `python` to `python@3.14` there to get this.

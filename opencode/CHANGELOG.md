@@ -1,2 +1,1 @@
-- Backups skip the Rust toolchains in `~/.rustup`, which mise installs again.
-- Use the app from your own terminal over SSH, and add it to Herdr as a machine, with the new `ssh_authorized_keys` option and an SSH port. Herdr comes with the app.
+- Use the app from your own terminal over SSH, and add it to [Herdr](https://herdr.dev) as a machine. Add your public key to the new `ssh_authorized_keys` option and give SSH a port in the app's Network settings. Herdr comes with the app.

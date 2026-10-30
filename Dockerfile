@@ -45,7 +45,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /etc/ssh/ssh_host_*
 
 # HOME, for sshd as well as Docker, so SSH sessions start in /data/home and read its dotfiles.
-RUN usermod --home /data/home root
+# Edited in place, since usermod refuses to change root while the build runs as it.
+RUN sed -i 's|^\(root:[^:]*:0:0:[^:]*:\)/root:|\1/data/home:|' /etc/passwd \
+    && grep -q '^root:[^:]*:0:0:[^:]*:/data/home:' /etc/passwd
 
 COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
 COPY image/mise.toml /etc/mise/config.toml

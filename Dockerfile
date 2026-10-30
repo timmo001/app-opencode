@@ -38,10 +38,14 @@ RUN apt-get update \
         less \
         libatomic1 \
         openssh-client \
+        openssh-server \
         procps \
         unzip \
         xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /etc/ssh/ssh_host_*
+
+# HOME, for sshd as well as Docker, so SSH sessions start in /data/home and read its dotfiles.
+RUN usermod --home /data/home root
 
 COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
 COPY image/mise.toml /etc/mise/config.toml

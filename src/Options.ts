@@ -10,6 +10,7 @@ const Options = Schema.Struct({
   music_assistant_token: Schema.optional(Schema.String),
   ha_bridge: Schema.optional(Schema.Boolean),
   hide_sidebar: Schema.optional(Schema.Boolean),
+  ssh_authorized_keys: Schema.optional(Schema.Array(Schema.String)),
   system_packages: Schema.Array(Schema.String),
   tools: Schema.Array(Schema.String),
 });

@@ -95,6 +95,10 @@ Which logs it can read depends on which of the two apps you run. See [The two ap
 
 Gives the sidebar page the whole screen, without Home Assistant's sidebar and header around it. The menu button at the start of the page's tabs shows the sidebar over the page when you need it. It's on by default; turn it off to keep Home Assistant's sidebar as it is on other pages.
 
+### `ssh_authorized_keys`
+
+Public keys allowed to sign in to the app over SSH, as `root`, one per entry, such as the contents of your `~/.ssh/id_ed25519.pub`. The SSH server only runs while this lists a key, and only listens on your network once you give **SSH** a port in the app's **Network** settings. Passwords are never accepted. See [Your own terminal and Herdr](#your-own-terminal-and-herdr).
+
 ### `system_packages`
 
 Debian packages to install with apt. The container's filesystem is reset on every start, so they're installed again each time. That happens in the background once OpenCode is up, so it doesn't hold up the start, but a package isn't there until the app's log says the install has finished: remove any you don't need. A package that can't be found is skipped, and shown on the sidebar page and in the app's log.
@@ -115,6 +119,7 @@ These come with the app and are always there, whatever the `tools` option says:
 - Node.js, Bun and [aube](https://github.com/aubepkg/aube), which installs npm tools
 - The GitHub CLI (`gh`), `jq`, ripgrep (`rg`) and Neovim (`nvim`), which Git and other tools open for editing
 - [Home Assistant Bridge](https://ha-bridge.timmo.dev) (`ha-bridge`), which the app runs while the `ha_bridge` option is on
+- [Herdr](https://herdr.dev), so you can add the app to Herdr as a machine
 - From Debian: `git`, `curl`, `ssh`, `less`, `unzip`, `xz` and bash completion
 
 ## The terminal
@@ -128,6 +133,24 @@ OpenCode's terminal runs bash with tab completion that cycles through matches, a
 - `lazygit`: `lg`
 
 There are short Git aliases too, such as `g` for `git`. To change the prompt, add `/data/home/.config/starship.toml`. For your own aliases, add `/data/home/.bash_profile`, which the terminal reads after the app's defaults. Your own commands can go in `/data/home/.local/bin`, which comes first on `PATH` for the terminal and the agent.
+
+## Your own terminal and Herdr
+
+To use the app from a terminal on your own computer rather than the sidebar page:
+
+1. Add your public key to the [`ssh_authorized_keys`](#ssh_authorized_keys) option.
+2. In the app's **Network** settings, give **SSH** a port that's free on your Home Assistant host, such as `2222`. Port 22 is usually taken by the SSH app or the host itself.
+3. Restart the app, then connect with `ssh -p 2222 root@homeassistant.local`.
+
+You get the same shell as the sidebar's **Shell** tab, in `/data/home`, with the same tools and Home Assistant access. Run `opencode` there to open OpenCode's terminal app connected to the app's server. The manager app is reached the same way, on a port of its own.
+
+To keep the app in [Herdr](https://herdr.dev) alongside your own machine, add it from each computer you use:
+
+```sh
+herdr machine add ssh://root@homeassistant.local:2222 --label "OpenCode app"
+```
+
+Herdr comes with the app, so it doesn't need to install anything there. Its workspaces and the agents in them keep running when you disconnect, until the app restarts. The app's host key is kept in `/data`, so it stays the same across restarts and updates.
 
 ## Updates
 

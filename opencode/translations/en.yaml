@@ -40,6 +40,12 @@ configuration:
     description: >-
       Give the sidebar page the whole screen, with a menu button on it to show Home Assistant's
       sidebar when you need it.
+  ssh_authorized_keys:
+    name: SSH authorized keys
+    description: >-
+      Public keys allowed to sign in to the app over SSH as root, one per entry. The SSH server runs
+      while this has a key, on the port you give SSH in the Network settings. Add the app to Herdr
+      as a machine this way.
   system_packages:
     name: System packages
     description: >-
@@ -53,4 +59,5 @@ configuration:
       as go@1.27 or npm:prettier@3. They're kept between restarts and updated with the app's
       built-in tools.
 network:
+  22/tcp: SSH, for your own terminal and Herdr
   49374/tcp: OpenCode on your network (web UI and API)

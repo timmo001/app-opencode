@@ -18,10 +18,12 @@ ingress: true
 ingress_port: 8099
 panel_icon: mdi:code-braces
 panel_title: OpenCode (manager)
-# A different host port, so both apps can run at once.
+# A different host port, so both apps can run at once. SSH is closed until you give it one.
 ports:
+  22/tcp: null
   49374/tcp: 49375
 ports_description:
+  22/tcp: SSH, for your own terminal and Herdr
   49374/tcp: OpenCode on your network (web UI and API)
 watchdog: tcp://[HOST]:[PORT:49374]
 # Reaches Home Assistant's MCP server through the Supervisor.
@@ -78,6 +80,7 @@ options:
   home_assistant_mcp: true
   ha_bridge: true
   hide_sidebar: true
+  ssh_authorized_keys: []
   system_packages:
     - build-essential
     - dnsutils
@@ -120,6 +123,8 @@ schema:
   music_assistant_token: password?
   ha_bridge: bool
   hide_sidebar: bool
+  ssh_authorized_keys:
+    - str
   system_packages:
     - match(^[a-z0-9][a-z0-9+.-]+$)
   tools:

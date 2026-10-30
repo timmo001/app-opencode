@@ -14,6 +14,8 @@ gh = "latest"
 "github:timmo001/ha-bridge" = { version = "latest", minimum_release_age = "0s" }
 # For its skills, which the app links in for Triage's MCP server, such as triage-resolve.
 "github:timmo001/triage" = "latest"
+# So the app can be a Herdr machine over SSH, with the agent sessions in it kept running.
+herdr = "latest"
 jq = "latest"
 node = "latest"
 # OpenCode 2. Updates within 2.x install on their own; a new major needs an app release.

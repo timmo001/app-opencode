@@ -22,6 +22,9 @@ ports_description:
   22/tcp: SSH, for your own terminal and Herdr
   49374/tcp: OpenCode on your network (web UI and API)
 watchdog: tcp://[HOST]:[PORT:49374]
+# Debian's sshd writes each login to the kernel audit log and drops the session when it can't.
+privileged:
+  - AUDIT_WRITE
 # Reaches Home Assistant's MCP server through the Supervisor.
 homeassistant_api: true
 # The Supervisor's /core endpoints, which ha-bridge reads Core's journal through.

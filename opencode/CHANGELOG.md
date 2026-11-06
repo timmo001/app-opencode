@@ -1,1 +1,2 @@
-- The `tools` option's default Python is now Home Assistant's own version, 3.14, rather than the newest. Python 3.15 is missing prebuilt packages that tools such as `yamllint` need. An existing install keeps its own list, so change `python` to `python@3.14` there to get this.
+- Asks the Supervisor for `AUDIT_WRITE`, so SSH keeps working once apps lose it by default. Supervisor 2026.12 drops it for new installs, and every install follows by 2027.05. Without it, Debian's SSH server can't record logins and drops every terminal session, including Herdr's. See [Apps will lose four default Linux capabilities](https://contributors.home-assistant.io/blog/2026/11/06/apps-fewer-default-capabilities/).
+- The image's mise is now 2026.11.1.

@@ -104,7 +104,7 @@ url = "https://nodejs.org/dist/v26.13.0/node-v26.13.0-win-x64.zip"
 version = "1.38.0"
 backend = "pypi:yamllint"
 specifiers = ["1.38.0"]
-uv = { path = ".mise/locks/pypi-yamllint/1.38.0", digest = "sha256:c1d36787af2c6b2c40eb5fef586a93888516a03a03c6af3a9d684a6dc662658d" }
+uv = { path = ".mise/locks/pypi-yamllint/1.38.0", digest = "sha256:d0c84c3be291799f5e4815bf073961d62f956242ca1622f6fff99f46963036c0" }
 
 [[tools.uv]]
 version = "0.13.7"

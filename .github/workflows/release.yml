@@ -51,7 +51,7 @@ jobs:
       contents: read
       packages: write
     # yamllint disable-line rule:line-length
-    uses: timmo001/workflows/.github/workflows/build-container-image.yml@ec70016a91999259142a156104978174490a0831 # 20261110.0
+    uses: timmo001/workflows/.github/workflows/build-container-image.yml@9bb6ae3c2a1542cec4195b63f9516c83001e578e # 20261113.0
     with:
       image: ghcr.io/timmo001/app-opencode
       version: ${{ needs.version.outputs.version }}
@@ -63,7 +63,7 @@ jobs:
     permissions:
       contents: read
     # yamllint disable-line rule:line-length
-    uses: timmo001/workflows/.github/workflows/home-assistant-app-changelog.yml@ec70016a91999259142a156104978174490a0831 # 20261110.0
+    uses: timmo001/workflows/.github/workflows/home-assistant-app-changelog.yml@9bb6ae3c2a1542cec4195b63f9516c83001e578e # 20261113.0
     with:
       changelog-path: opencode/CHANGELOG.md
     secrets:
@@ -75,7 +75,7 @@ jobs:
     name: Home Assistant apps repository
     needs: image
     # yamllint disable-line rule:line-length
-    uses: timmo001/workflows/.github/workflows/home-assistant-app-dispatch.yml@ec70016a91999259142a156104978174490a0831 # 20261110.0
+    uses: timmo001/workflows/.github/workflows/home-assistant-app-dispatch.yml@9bb6ae3c2a1542cec4195b63f9516c83001e578e # 20261113.0
     with:
       repository: timmo001/home-assistant-apps
     secrets:

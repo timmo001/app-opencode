@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@effect/platform-bun": "4.1.4",
-    "@opencode/client": "2.2.7",
-    "@opencode/plugin": "2.2.7",
+    "@opencode/client": "2.3.0",
+    "@opencode/plugin": "2.3.0",
     "effect": "4.1.4",
     "ghostty-web": "github:anomalyco/ghostty-web#6e24d040458ddd7aae81572fe2901deec32f9fe7",
     "uqr": "0.1.3"

@@ -1,6 +1,7 @@
 ---
 ignore: |
   .agents/
+  .mise/locks/
   node_modules/
 rules:
   braces:

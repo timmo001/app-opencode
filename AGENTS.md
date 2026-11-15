@@ -20,6 +20,7 @@ There's no s6-overlay, no bashio and no hassio-addons base: Debian provides the 
 mise run check      # Oxlint (type aware, no warnings allowed), tsc, Prettier and yamllint
 mise run build      # dist/opencode-app and dist/plugin.js
 mise run format     # Prettier
+hk check --all      # Pre-push linters: Markdown, YAML, Actions and shell
 ```
 
 There's no Docker locally. CI builds the image for both architectures without pushing.

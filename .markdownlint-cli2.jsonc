@@ -1,0 +1,14 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    ".agents/**",
+    // Written by the Release workflow from the GitHub release notes.
+    "opencode/CHANGELOG.md",
+    "opencode_manager/CHANGELOG.md",
+  ],
+}

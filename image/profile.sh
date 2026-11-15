@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Debian's /etc/profile resets PATH for login shells, such as OpenCode's terminal, which drops
 # ~/.local/bin and mise's shims. Put them back in the same order as the image's PATH.
 # /etc/bash.bashrc runs this too, since /etc/profile reads that before /etc/profile.d.

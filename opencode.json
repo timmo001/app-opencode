@@ -10,6 +10,16 @@
       "action": "external_directory",
       "resource": "~/repos/triage/**",
       "effect": "allow"
+    },
+    {
+      "action": "gh.write *",
+      "resource": "gh_* timmo001/app-opencode*",
+      "effect": "allow"
+    },
+    {
+      "action": "gh.write *",
+      "resource": "gh_*delete* timmo001/app-opencode*",
+      "effect": "ask"
     }
   ],
   "references": {

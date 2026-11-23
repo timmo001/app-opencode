@@ -39,6 +39,7 @@ There's no Docker locally. CI builds the image for both architectures without pu
 - Built-in tools are installed into mise's system folders in the image. Upgrades go into `$HOME/.local/share/mise` with `mise install tool@version`, never `mise upgrade`, which would write into the image and be lost.
 - The server's OpenCode is resolved from the system config alone, so the user's mise layers can't change it.
 - OpenCode stays on major version 2 in `image/mise.toml`; a new major needs a client and plugin built for it.
+- `tooling.yml` records the OpenCode, Supervisor and Core releases the app was last reviewed against. Upkeep's drift job hands a newer one to an agent with the review note there; set `reviewed` once it's reviewed.
 
 ## Skills
 

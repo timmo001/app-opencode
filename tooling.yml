@@ -1,0 +1,29 @@
+---
+# Tool releases this app was last reviewed against. Upkeep's drift job
+# compares each with the newest release and hands a moved one to an agent to
+# review, with the note below.
+tools:
+  - repo: anomalyco/opencode
+    reviewed: v2.4.1
+    tags: ^v2\.
+    review: >-
+      Check how the app runs OpenCode against the release's changelog and OpenAPI schema. Cover the
+      server and its service config in src/OpenCodeServer.ts (serve --service, the password and remote
+      access through OpenTunnel, pairing codes and /auth/connect, and the PTY API the sidebar terminals
+      use), the config and MCP servers src/Connections.ts writes, and the plugin in src/plugin.ts against
+      @opencode/plugin. Recheck the skills under image/skills and opencode/DOCS.md for OpenCode commands,
+      config or behaviour that changed.
+  - repo: home-assistant/supervisor
+    reviewed: 2026.11.0
+    review: >-
+      Check opencode/config.yaml and opencode_manager/config.yaml (options schema, ingress, ports, roles
+      and discovery) against the release's app config changes, the discovery the app sends in
+      src/Discovery.ts, and the Supervisor endpoints the app and its skills use (/core, logs and app
+      management for the manager role).
+  - repo: home-assistant/core
+    reviewed: 2026.11.2
+    review: >-
+      Check the Home Assistant connections in src/Connections.ts (the llm/api/list WebSocket command and
+      the MCP Server URLs under /api/mcp) and the opencode-app-home-assistant skill against the
+      release's breaking changes, the Model Context Protocol Server and Client integrations, and the REST
+      and WebSocket APIs it describes.

@@ -38,7 +38,7 @@ To sign in from your phone, another computer or the OpenCode desktop app, select
 
 ### Answering Assist
 
-With the [OpenCode integration](https://github.com/timmo001/ha-opencode) installed, Home Assistant finds the app by itself: **Settings** > **Devices & services** shows OpenCode as discovered. Add it, and OpenCode's agents can answer Assist, such as your voice assistants. The app pairs Home Assistant for you each time it starts, so there's no link to copy. It reaches OpenCode inside Home Assistant, so this works whether or not port 49374 is mapped.
+With the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode) installed, Home Assistant finds the app by itself: **Settings** > **Devices & services** shows OpenCode as discovered. Add it, and OpenCode's agents can answer Assist, such as your voice assistants. The app pairs Home Assistant for you each time it starts, so there's no link to copy. It reaches OpenCode inside Home Assistant, so this works whether or not port 49374 is mapped.
 
 ## Options
 

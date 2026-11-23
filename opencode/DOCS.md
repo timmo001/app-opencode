@@ -5,6 +5,8 @@ An AI coding agent for your Home Assistant setup, powered by [OpenCode](https://
 > [!TIP]
 > Optionally, the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode) lets OpenCode's agents answer Assist as well, typed or on your voice assistants. See [Answering Assist](#answering-assist).
 
+This is a community project. It isn't made or endorsed by Anomaly, the makers of OpenCode, or by Home Assistant.
+
 ## The two apps
 
 The repository has two versions of the app, which differ only in how much of the Supervisor the agent can use:
@@ -42,6 +44,8 @@ To sign in from your phone, another computer or the OpenCode desktop app, select
 ### Answering Assist
 
 With the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode) installed, Home Assistant finds the app by itself: **Settings** > **Devices & services** shows OpenCode as discovered. Add it, and OpenCode's agents can answer Assist, such as your voice assistants. The app pairs Home Assistant for you each time it starts, so there's no link to copy. It reaches OpenCode inside Home Assistant, so this works whether or not port 49374 is mapped.
+
+Anyone who can talk to a voice assistant can talk to its agent, and the app's agents can use Home Assistant's whole API. Before a voice assistant uses one, see the integration's guide to [locking an agent down](https://github.com/timmo001/ha-integration-opencode#locking-an-agent-down), and the [comparison of the app with a server of your own](https://github.com/timmo001/ha-integration-opencode#the-app-or-a-server-of-your-own).
 
 ## Options
 

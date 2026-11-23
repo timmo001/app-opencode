@@ -12,6 +12,8 @@ The images are prebuilt for amd64 and aarch64 on GitHub's container registry.
 > [!TIP]
 > Optionally, the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode) lets OpenCode's agents answer Assist as well, typed or on your voice assistants. Home Assistant finds the app by itself, and the app pairs Home Assistant for you.
 
+This is a community project. It isn't made or endorsed by Anomaly, the makers of OpenCode, or by Home Assistant.
+
 ## Installation
 
 [![Add this repository to your Home Assistant.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftimmo001%2Fapp-opencode)

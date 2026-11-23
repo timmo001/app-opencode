@@ -1,3 +1,2 @@
-- Offers itself to the [OpenCode integration](https://github.com/timmo001/ha-opencode), so Home Assistant can add OpenCode's agents to Assist without a pairing link. See [Answering Assist](https://github.com/timmo001/app-opencode/blob/main/opencode/DOCS.md#answering-assist).
-- Asks the Supervisor for `AUDIT_WRITE`, so SSH keeps working once apps lose it by default. Supervisor 2026.12 drops it for new installs, and every install follows by 2027.05. Without it, Debian's SSH server can't record logins and drops every terminal session, including Herdr's. See [Apps will lose four default Linux capabilities](https://contributors.home-assistant.io/blog/2026/11/06/apps-fewer-default-capabilities/).
-- The image's mise is now 2026.11.1.
+- Offers OpenCode to the new [OpenCode integration](https://github.com/timmo001/ha-opencode) through discovery, so Home Assistant finds the app by itself. Add it from **Settings** > **Devices & services**, and the app pairs Home Assistant for you. Your OpenCode agents can then answer Assist, typed or on a voice satellite, and run AI tasks.
+- The image's mise is now 2026.11.12, and Bun 1.4.5 builds the plugin.

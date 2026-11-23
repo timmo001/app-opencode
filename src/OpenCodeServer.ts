@@ -43,6 +43,8 @@ export interface TerminalSize {
 export interface Interface {
   /** A one-time code that signs a browser in to OpenCode at `/auth/connect/<code>`. */
   readonly pair: Effect.Effect<PairCode, OpenCodeServerError>;
+  /** A paired token for another client, such as Home Assistant, from a code redeemed at once. */
+  readonly token: Effect.Effect<string, OpenCodeServerError>;
   /** What the running server reports about itself. */
   readonly info: Effect.Effect<Info, OpenCodeServerError>;
   /** Stops the server and starts the OpenCode the system config resolves to now. */
@@ -241,6 +243,10 @@ export const layer = Layer.effect(
       Effect.map((code) => ({ code: code.code, expiresIn: code.expires_in }))
     );
 
+    const token = withClient('Pairing', ({ client }) =>
+      client.server.pair().pipe(Effect.flatMap(({ code }) => client.server.connect({ code })))
+    ).pipe(Effect.map((connected) => connected.token));
+
     const info = withClient('Reading the server info', ({ client }) => client.server.info()).pipe(
       Effect.map((server) => ({
         version: server.version,
@@ -283,7 +289,16 @@ export const layer = Layer.effect(
         )
       );
 
-    return Service.of({ pair, info, restart, createPty, ptyRunning, resizePty, ptySocketUrl });
+    return Service.of({
+      pair,
+      token,
+      info,
+      restart,
+      createPty,
+      ptyRunning,
+      resizePty,
+      ptySocketUrl,
+    });
   })
 );
 

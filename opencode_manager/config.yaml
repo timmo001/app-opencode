@@ -34,6 +34,9 @@ homeassistant_api: true
 # Every Supervisor log for ha-bridge, and control of apps, the host and backups.
 hassio_api: true
 hassio_role: manager
+# Offers OpenCode to the OpenCode integration, as an Assist agent.
+discovery:
+  - opencode
 map:
   - type: addon_config
     read_only: false

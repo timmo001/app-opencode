@@ -36,6 +36,10 @@ OpenCode's web app can't run inside the sidebar itself, so it always opens in it
 
 To sign in from your phone, another computer or the OpenCode desktop app, select **Show a pairing code** on the sidebar page. Scan the QR code with the OpenCode app, or copy a link and open or paste it on the device. It's the same as running `opencode pair` on your own machine: the code works once and expires after a few minutes, so show a new one for each device.
 
+### Answering Assist
+
+With the [OpenCode integration](https://github.com/timmo001/ha-opencode) installed, Home Assistant finds the app by itself: **Settings** > **Devices & services** shows OpenCode as discovered. Add it, and OpenCode's agents can answer Assist, such as your voice assistants. The app pairs Home Assistant for you each time it starts, so there's no link to copy. It reaches OpenCode inside Home Assistant, so this works whether or not port 49374 is mapped.
+
 ## Options
 
 ### `server_password`

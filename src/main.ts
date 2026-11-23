@@ -4,6 +4,7 @@ import { FetchHttpClient } from 'effect/http';
 import { Bridge } from './Bridge.js';
 import { Connections } from './Connections.js';
 import { Control } from './Control.js';
+import { Discovery } from './Discovery.js';
 import { Git } from './Git.js';
 import { Home } from './Home.js';
 import { Ingress } from './Ingress.js';
@@ -45,7 +46,7 @@ const packages = Layer.effectDiscard(
   })
 );
 
-const app = Layer.mergeAll(Control.layer, Ingress.layer, Ssh.layer, packages).pipe(
+const app = Layer.mergeAll(Control.layer, Discovery.layer, Ingress.layer, Ssh.layer, packages).pipe(
   Layer.provideMerge(Terminal.layer),
   Layer.provideMerge(Updates.layer),
   Layer.provideMerge(OpenCodeServer.layer),

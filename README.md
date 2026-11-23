@@ -32,7 +32,3 @@ The app is a small Effect program, in `src/`, that prepares the home folder, ins
 mise run check   # Oxlint, TypeScript, Prettier and yamllint
 mise run build   # The entrypoint binary and the plugin, in dist/
 ```
-
-## Licence
-
-[Apache-2.0](LICENSE)

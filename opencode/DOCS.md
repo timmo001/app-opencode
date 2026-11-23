@@ -2,6 +2,9 @@
 
 An AI coding agent for your Home Assistant setup, powered by [OpenCode](https://opencode.ai). The app runs OpenCode 2's server, keeps it and its tools up to date, and opens it from the Home Assistant sidebar.
 
+> [!TIP]
+> To have OpenCode's agents answer Assist, typed or on your voice assistants, add the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode). See [Answering Assist](#answering-assist).
+
 ## The two apps
 
 The repository has two versions of the app, which differ only in how much of the Supervisor the agent can use:

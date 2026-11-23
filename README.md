@@ -9,6 +9,9 @@ A Home Assistant app that runs [OpenCode](https://opencode.ai) 2, an AI coding a
 
 The images are prebuilt for amd64 and aarch64 on GitHub's container registry.
 
+> [!TIP]
+> To have OpenCode's agents answer Assist, typed or on your voice assistants, add the [OpenCode integration](https://github.com/timmo001/ha-integration-opencode). Home Assistant finds the app by itself, and the app pairs Home Assistant for you.
+
 ## Installation
 
 [![Add this repository to your Home Assistant.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftimmo001%2Fapp-opencode)

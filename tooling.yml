@@ -21,7 +21,7 @@ tools:
       src/Discovery.ts, and the Supervisor endpoints the app and its skills use (/core, logs and app
       management for the manager role).
   - repo: home-assistant/core
-    reviewed: 2026.11.2
+    reviewed: 2026.11.3
     review: >-
       Check the Home Assistant connections in src/Connections.ts (the llm/api/list WebSocket command and
       the MCP Server URLs under /api/mcp) and the opencode-app-home-assistant skill against the

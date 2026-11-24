@@ -17,25 +17,29 @@
     },
     "task-runners": {
       "source": "timmo001/skills",
-      "ref": "66b5d1d400f89faebf1db2add5e058db3f9da002",
+      "ref": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
+      "commit": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
       "sourceType": "github",
       "skillPath": "task-runners/SKILL.md",
-      "computedHash": "45fd9cb4566ad3813fb35d1f34417a8162a4d847f5b4c7a1371fa8315c1ace60"
+      "computedHash": "4d9559262d7ce63b6b42a8994fd9c488ee96cfd3d71a412a562297d2dcc26098",
+      "installMode": "copy"
     },
     "types-enforce-ts": {
       "source": "timmo001/skills",
-      "ref": "98bb162843e692a5b353c772f6665fdfa23233b9",
+      "ref": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
+      "commit": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
       "sourceType": "github",
       "skillPath": "types-enforce-ts/SKILL.md",
-      "computedHash": "6b0cfce721d07db30f81c150c13b9300d2748a6f61686d03d586b4ebee9ce526"
+      "computedHash": "58c1bdc6a0978143d0b220c881f5b4974f90c35da1133d43f30990cf82c6c7b4",
+      "installMode": "copy"
     },
     "writing-style": {
       "source": "timmo001/skills",
-      "ref": "d1b6dd4ecfd6b112ebcd67f2a4dae1fd9627203b",
-      "commit": "d1b6dd4ecfd6b112ebcd67f2a4dae1fd9627203b",
+      "ref": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
+      "commit": "4b26e5f7c3c4a9710ef0af7a39af6be63d445748",
       "sourceType": "github",
       "skillPath": "writing-style/SKILL.md",
-      "computedHash": "59a3b852246cf6de8f3fbe4e913e34b41b11355ea58146d2f56088463bd49c02",
+      "computedHash": "af8d08637eb9e503dd4bffc6df3b55e86f1563522285a3023f7602cdd1129a12",
       "installMode": "copy"
     }
   }

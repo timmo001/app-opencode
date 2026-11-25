@@ -14,7 +14,7 @@ tools:
       @opencode/plugin. Recheck the skills under image/skills and opencode/DOCS.md for OpenCode commands,
       config or behaviour that changed.
   - repo: home-assistant/supervisor
-    reviewed: 2026.11.0
+    reviewed: 2026.11.1
     review: >-
       Check opencode/config.yaml and opencode_manager/config.yaml (options schema, ingress, ports, roles
       and discovery) against the release's app config changes, the discovery the app sends in

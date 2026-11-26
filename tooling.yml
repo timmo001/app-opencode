@@ -4,7 +4,7 @@
 # review, with the note below.
 tools:
   - repo: anomalyco/opencode
-    reviewed: v2.4.1
+    reviewed: v2.4.2
     tags: ^v2\.
     review: >-
       Check how the app runs OpenCode against the release's changelog and OpenAPI schema. Cover the

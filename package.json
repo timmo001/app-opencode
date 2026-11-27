@@ -17,7 +17,7 @@
     "check": "bun run lint && bun run typecheck && bun run format:check"
   },
   "dependencies": {
-    "@effect/platform-bun": "4.1.6",
+    "@effect/platform-bun": "4.1.7",
     "@opencode/client": "2.4.2",
     "@opencode/plugin": "2.4.2",
     "effect": "4.1.6",
@@ -34,7 +34,7 @@
     "typescript": "7.0.2"
   },
   "overrides": {
-    "@effect/platform-node-shared": "4.1.6",
+    "@effect/platform-node-shared": "4.1.7",
     "effect": "4.1.6"
   }
 }
